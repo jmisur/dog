@@ -1,6 +1,12 @@
-package com.jmisur.dto;
+package com.jmisur.dto.generator;
+
+import java.lang.reflect.Modifier;
 
 public class XField<T> extends XFieldBase<T> {
+
+	public XField(String name, Class<T> type, XField<?> source) {
+		super(name, type, Modifier.PUBLIC, null);
+	}
 
 	public XField(String name, Class<T> type, int modifier, XField<?> source) {
 		super(name, type, modifier, null);

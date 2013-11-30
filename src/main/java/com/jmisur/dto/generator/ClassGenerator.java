@@ -1,4 +1,4 @@
-package com.jmisur.dto;
+package com.jmisur.dto.generator;
 
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
@@ -110,6 +110,46 @@ public class ClassGenerator<T> {
 	public ClassGenerator<T> method(String name) {
 		copyMethods.add(name);
 		return this;
+	}
+
+	public String getClassName() {
+		return className;
+	}
+
+	public String getPackageName() {
+		return packageName;
+	}
+
+	public XField<T> getSourceXClass() {
+		return sourceXClass;
+	}
+
+	public List<XFieldBase<?>> getFields() {
+		return fields;
+	}
+
+	public List<XField<?>> getExcludedFields() {
+		return excludedFields;
+	}
+
+	public List<MethodReference> getMethods() {
+		return methods;
+	}
+
+	public List<String> getCopyMethods() {
+		return copyMethods;
+	}
+
+	public List<XFieldBase<?>> getEquals() {
+		return equals;
+	}
+
+	public List<XFieldBase<?>> getHashCode() {
+		return hashCode;
+	}
+
+	public boolean isExcludeAll() {
+		return excludeAll;
 	}
 
 }

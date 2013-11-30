@@ -1,9 +1,9 @@
-import static com.jmisur.dto.Generator.generate;
-
 import java.lang.reflect.Modifier;
 
-import com.jmisur.dto.XField;
-import com.jmisur.dto.XFieldBase;
+import com.jmisur.dto.generator.GeneratorContext;
+import com.jmisur.dto.generator.GeneratorHelper;
+import com.jmisur.dto.generator.XField;
+import com.jmisur.dto.generator.XFieldBase;
 import com.jmisur.test.Address;
 import com.jmisur.test.Person;
 
@@ -35,7 +35,7 @@ public class GeneratorTest {
 
 		// default config -- generate all
 		generate("PersonData").from(person);
-		// pacakge
+		// package
 		generate("PersonData").from(person);
 
 		// custom fields
@@ -71,32 +71,40 @@ public class GeneratorTest {
 
 	}
 
+	private static GeneratorHelper generate(String string) {
+		return new GeneratorContext().generate(string);
+	}
+
 	public static class XPerson extends XField<Person> {
 
 		public static XPerson person = new XPerson();
 
-		public XPerson(String name, int modifier, XField<?> source) {
-			super(name, Person.class, modifier, source);
+		public XPerson(String name, XField<?> source) {
+			super(name, Person.class, source);
 		}
 
 		public XPerson() {
-			this(null, -1, null);
+			this(null, null);
 		}
 
-		public XAddress address = new XAddress("address", Modifier.PUBLIC, this);
-		public XField<String> firstName = new XField<String>("firstName", String.class, Modifier.PUBLIC, this);
+		public XAddress address = new XAddress("address", this);
+		public XField<String> firstName = new XField<String>("firstName", String.class, this);
 	}
 
 	public static class XAddress extends XField<Address> {
-		public static XAddress address;
+		public static XAddress address = new XAddress();
 
-		public XAddress(String name, int modifier, XField<?> source) {
-			super(name, Address.class, modifier, source);
+		public XAddress(String name, XField<?> source) {
+			super(name, Address.class, source);
 		}
 
-		public XField<String> id = new XField<String>("id", String.class, Modifier.PUBLIC, this);
-		public XField<String> street = new XField<String>("street", String.class, Modifier.PUBLIC, this);
-		public XField<String> name = new XField<String>("name", String.class, Modifier.PUBLIC, this);
+		public XAddress() {
+			this(null, null);
+		}
+
+		public XField<String> id = new XField<String>("id", String.class, this);
+		public XField<String> street = new XField<String>("street", String.class, this);
+		public XField<String> name = new XField<String>("name", String.class, this);
 
 		public XFieldBase<String> asId() {
 			return asId(String.class);

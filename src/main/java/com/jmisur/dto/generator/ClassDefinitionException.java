@@ -1,4 +1,4 @@
-package com.jmisur.dto;
+package com.jmisur.dto.generator;
 
 @SuppressWarnings("serial")
 public class ClassDefinitionException extends RuntimeException {

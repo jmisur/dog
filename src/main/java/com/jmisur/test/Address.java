@@ -1,5 +1,8 @@
 package com.jmisur.test;
 
+import com.jmisur.dto.Dto;
+
+@Dto
 public class Address {
 
 	private String id;

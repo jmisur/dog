@@ -1,4 +1,6 @@
-package com.jmisur.dto;
+package com.jmisur.dto.generator;
+
+
 
 public class XFieldBase<T> {
 	protected final String __name;
