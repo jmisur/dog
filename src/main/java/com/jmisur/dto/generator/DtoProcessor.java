@@ -144,7 +144,7 @@ public class DtoProcessor extends AbstractGenerator<JavaClass> {
 			fields.remove(field.getName());
 		}
 		for (XFieldBase<?> field : classGenerator.getFields()) {
-			if (field.getSource() != null) {
+			if (field.getClass() == XFieldBase.class && field.getSource() != null) {
 				fields.put(field.getSource().getName(), field);
 			} else {
 				fields.put(field.getName(), field);

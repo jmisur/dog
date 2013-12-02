@@ -30,10 +30,11 @@ public class MyGenerator implements Generator {
 	// multiple source classes
 	// package
 	// validate inputs / strings, classnames, method names, package name, field names
-	// superclass
+	// superclass / hierarchy
 	// interface
 	// add annotations, serializable etc
 	// convert subobjects to X by default
+	// embed object asEmbedded().field(...).method(..)
 
 	public void generate(GeneratorContext c) {
 		// default config -- generate all
@@ -45,6 +46,10 @@ public class MyGenerator implements Generator {
 		c.generate("PersonData11").from(person).exclude(person.firstName, person.address);
 		c.generate("PersonData12").from(person).excludeAll().field(person.firstName);
 		c.generate("PersonData13").from(person).excludeAll().fields(person.firstName, person.lastName);
+
+		// nested field
+		c.generate("PersonData14").from(person).field(person.address.name);
+		c.generate("PersonData15").from(person).field(person.address.name.as("addressName"));
 
 		// custom fields & options
 		c.generate("PersonData20").from(person).field("fullName", String.class);
@@ -61,22 +66,19 @@ public class MyGenerator implements Generator {
 		XFieldBase<?> customAddressDto = c.generate("AddressData30").from(address).build();
 		c.generate("PersonData33").from(person).field(person.address.as("addr", customAddressDto, Modifier.PROTECTED));
 
+		// copy method
+		// c.generate("PersonData").from(person).method("getAllStuff");
+		c.generate("PersonData").from(person).method(person.isAorB()).method(person.setMaNameDude(String.class, Integer.class));
+
 		// // package
 		// c.generate("PersonData").from(person);
 		//
 		//
 		// // id
 		// c.generate("PersonData").from(person).field(person.address.asId().noSetter());
-		// // nested field
-		// c.generate("PersonData").from(person).field(person.address.name);
-		// c.generate("PersonData").from(person).field(person.address.name.as("addressName"));
 		//
 		// // custom method
 		// c.generate("PersonData").from(person).method(PersonUtils.class, "isVisible");
-
-		// copy method
-		// c.generate("PersonData").from(person).method("getAllStuff");
-		c.generate("PersonData").from(person).method(person.isAorB()).method(person.setMaNameDude(String.class, Integer.class));
 
 		//
 		// // equals and hashcode
