@@ -75,7 +75,8 @@ public class MyGenerator implements Generator {
 		// c.generate("PersonData").from(person).method(PersonUtils.class, "isVisible");
 
 		// copy method
-		c.generate("PersonData").from(person).method("getAllStuff");
+		// c.generate("PersonData").from(person).method("getAllStuff");
+		c.generate("PersonData").from(person).method(person.isAorB()).method(person.setMaNameDude(String.class, Integer.class));
 
 		//
 		// // equals and hashcode

@@ -39,10 +39,20 @@ public class Person {
 	}
 
 	public String getAllStuff() {
-		return "all stuff";
+		String a = "xxx";
+		return "all stuff" + a;
 	}
 
 	public boolean isAorB() {
-		return true;
+		if (Math.random() > 0) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	public boolean setMaNameDude(String name, int what) {
+		firstName = name;
+		return what > 0;
 	}
 }

@@ -48,8 +48,34 @@ public class DtoProcessor extends AbstractGenerator<JavaClass> {
 					Collection<XFieldBase<?>> fields = createFields(classGenerator, dto);
 					createGettersSetters(dto, fields);
 
-					for (String methodName : classGenerator.getCopyMethods()) {
-					}
+					// for (String methodName : classGenerator.getCopyMethods()) {
+					// try {
+					// CompilationUnit cu = Helper.parserClass(null, classGenerator.getClassName());
+					// CompilationUnit x = (CompilationUnit) cu.accept(new CloneVisitor(), null);
+					//
+					// for (TypeDeclaration x2 : x.getTypes()) {
+					// if (x2.getName().equals(model.getName().getText())) {
+					// List<BodyDeclaration> members = x2.getMembers();
+					// for (BodyDeclaration member : members) {
+					// if (member instanceof MethodDeclaration) {
+					// MethodDeclaration methodMember = (MethodDeclaration) member;
+					// System.out.println(methodMember.getName());
+					// if (methodMember.getName().equals(method.getName().getText())) {
+					// JavaMethod methodCopy = New.method(Methods.PUBLIC, method.getReturnType(), method.getName().getText());
+					// List<Statement> statements = methodMember.getBody().getStmts();
+					// String sts = Joiner.on("\n").join(statements);
+					// methodCopy.getBody().setHardcoded(sts);
+					// xclass.getMethods().add(methodCopy);
+					// }
+					// }
+					// }
+					// }
+					// }
+					// } catch (ParseException e) {
+					// e.printStackTrace();
+					// }
+
+					// }
 
 					context.generateCode(dto, isInDebugMode());
 				}

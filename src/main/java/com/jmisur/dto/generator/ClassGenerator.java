@@ -15,7 +15,7 @@ public class ClassGenerator<T> {
 	private List<XFieldBase<?>> fields = new ArrayList<XFieldBase<?>>();
 	private List<XField<?>> excludedFields = new ArrayList<XField<?>>();
 	private List<MethodReference> methods = new ArrayList<MethodReference>();
-	private List<String> copyMethods = new ArrayList<String>();
+	private List<XMethod> copyMethods = new ArrayList<XMethod>();
 	private List<XFieldBase<?>> equals = new ArrayList<XFieldBase<?>>();
 	private List<XFieldBase<?>> hashCode = new ArrayList<XFieldBase<?>>();
 	private boolean excludeAll;
@@ -126,7 +126,7 @@ public class ClassGenerator<T> {
 		return this;
 	}
 
-	public ClassGenerator<T> method(String name) {
+	public ClassGenerator<T> method(XMethod name) {
 		copyMethods.add(name);
 		return this;
 	}
@@ -155,7 +155,7 @@ public class ClassGenerator<T> {
 		return methods;
 	}
 
-	public List<String> getCopyMethods() {
+	public List<XMethod> getCopyMethods() {
 		return copyMethods;
 	}
 

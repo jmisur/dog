@@ -1,9 +1,7 @@
 package com.jmisur.dto.generator;
 
+import static com.google.common.collect.Lists.newArrayList;
 import static com.google.common.collect.Sets.newHashSet;
-import japa.parser.ParseException;
-import japa.parser.ast.CompilationUnit;
-import japa.parser.ast.visitor.CloneVisitor;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,12 +13,14 @@ import org.jannocessor.model.bean.structure.JavaClassBean;
 import org.jannocessor.model.executable.JavaConstructor;
 import org.jannocessor.model.executable.JavaMethod;
 import org.jannocessor.model.structure.JavaClass;
+import org.jannocessor.model.type.JavaPrimitiveType;
 import org.jannocessor.model.type.JavaType;
 import org.jannocessor.model.util.Classes;
 import org.jannocessor.model.util.Fields;
 import org.jannocessor.model.util.Methods;
 import org.jannocessor.model.util.New;
 import org.jannocessor.model.variable.JavaField;
+import org.jannocessor.model.variable.JavaParameter;
 import org.jannocessor.processor.api.ProcessingContext;
 
 import com.jmisur.dto.Dto;
@@ -45,27 +45,47 @@ public class XProcessor extends AbstractGenerator<JavaClass> {
 			List<JavaField> fields = createFields(model, xclass);
 			createGetFields(xclass, fields);
 
-			Set<String> gs = gettersSetters(xclass);
-			for (JavaMethod method : model.getMethods()) {
-				if (!gs.contains(method.getName().getText())) {
-					JavaMethod methodCopy = New.method(Methods.PUBLIC, void.class, method.getName().getText());
-					methodCopy.getBody().setHardcoded(method.getCode().copy().getHardcoded()); // "return new %s(\n%s\n*/");
-					xclass.getMethods().add(methodCopy);
-
-					CompilationUnit cu;
-					try {
-						cu = Helper.parserClass(null, model.getType().getTypeClass());
-						CloneVisitor visitor = new CloneVisitor();
-						cu.accept(visitor, null);
-					} catch (ParseException e) {
-						e.printStackTrace();
-					}
-				}
-			}
+			Set<String> gettersSetters = gettersSetters(xclass);
+			createMethods(model, xclass, gettersSetters);
 
 			generate(xclass);
-			model.getName().appendPart("XXX");
-			generate(model);
+		}
+	}
+
+	private void createMethods(JavaClass model, JavaClass xclass, Set<String> gettersSetters) {
+		for (JavaMethod method : model.getMethods()) {
+			String methodName = method.getName().getText();
+			if (!gettersSetters.contains(methodName)) {
+				StringBuilder params = new StringBuilder(", ");
+				List<JavaParameter> signatureParams = newArrayList();
+				for (JavaParameter param : method.getParameters()) {
+					params.append(param.getType().getSimpleName()).append(".class");
+					params.append(", ");
+					JavaParameter signatureParam = New.parameter(New.type("Class<%s>", getWrapper(param.getType()).getSimpleName()), param.getName().getText());
+					signatureParams.add(signatureParam);
+				}
+				params.deleteCharAt(params.length() - 1);
+				params.deleteCharAt(params.length() - 1);
+				System.out.println("XXXXXXXXXXXXX " + params.toString());
+				JavaMethod methodRef = New.method(Methods.PUBLIC, XMethod.class, methodName, signatureParams);
+				methodRef.getBody().setHardcoded("return new %s(\"%s\", %s.class%s);", XMethod.class.getSimpleName(), methodName,
+						method.getReturnType().getSimpleName(), params.toString());
+				xclass.getMethods().add(methodRef);
+			}
+		}
+	}
+
+	private JavaType getWrapper(JavaType type) {
+		if (type instanceof JavaPrimitiveType) {
+			switch (type.getKind()) {
+			case INT:
+				System.out.println(Integer.class.getSimpleName());
+				return New.type(Integer.class);
+			default:
+				throw new IllegalArgumentException("Cannot handle primitive type " + type.getSimpleName());
+			}
+		} else {
+			return type;
 		}
 	}
 
