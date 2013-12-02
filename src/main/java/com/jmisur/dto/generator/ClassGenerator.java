@@ -1,5 +1,7 @@
 package com.jmisur.dto.generator;
 
+import static com.google.common.collect.Lists.newArrayList;
+
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -29,13 +31,14 @@ public class ClassGenerator<T> {
 		return this;
 	}
 
-	public ClassGenerator<T> exclude(XField<?> field) {
-		excludedFields.add(field);
+	public ClassGenerator<T> exclude(XField<?>... fields) {
+		excludedFields.addAll(newArrayList(fields));
 		return this;
 	}
 
-	public XField<T> done() {
-		return sourceXClass;
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	public XFieldBase<?> build() {
+		return new XFieldBase(className, className, 0, sourceXClass);
 	}
 
 	public ClassGenerator<T> field(XFieldBase<?> field) {
@@ -44,9 +47,17 @@ public class ClassGenerator<T> {
 		return this;
 	}
 
+	public ClassGenerator<T> fields(XFieldBase<?>... fields) {
+		for (XFieldBase<?> field : fields) {
+			checkSource(field);
+			this.fields.add(field);
+		}
+		return this;
+	}
+
 	private void checkSource(XFieldBase<?> field) {
-		if (field.__source != null) {
-			verifySource(field.__source);
+		if (field.getSource() != null) {
+			verifySource(field.getSource());
 		}
 	}
 
@@ -57,7 +68,7 @@ public class ClassGenerator<T> {
 		if (source == sourceXClass) {
 			return;
 		}
-		verifySource(source.__source);
+		verifySource(source.getSource());
 	}
 
 	public ClassGenerator<T> intField(String name) {
@@ -88,6 +99,14 @@ public class ClassGenerator<T> {
 		public MethodReference(Class<?> clazz, String name) {
 			this.clazz = clazz;
 			this.name = name;
+		}
+
+		public Class<?> getClazz() {
+			return clazz;
+		}
+
+		public String getName() {
+			return name;
 		}
 	}
 

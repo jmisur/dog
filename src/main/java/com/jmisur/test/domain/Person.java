@@ -1,4 +1,4 @@
-package com.jmisur.test;
+package com.jmisur.test.domain;
 
 import com.jmisur.dto.Dto;
 
@@ -9,6 +9,8 @@ import com.jmisur.dto.Dto;
 public class Person {
 
 	private String firstName;
+
+	private String lastName;
 
 	private Address address;
 
@@ -28,4 +30,19 @@ public class Person {
 		this.address = address;
 	}
 
+	public String getLastName() {
+		return lastName;
+	}
+
+	public void setLastName(String lastName) {
+		this.lastName = lastName;
+	}
+
+	public String getAllStuff() {
+		return "all stuff";
+	}
+
+	public boolean isAorB() {
+		return true;
+	}
 }

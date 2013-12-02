@@ -1,4 +1,4 @@
-package com.jmisur.test;
+package com.jmisur.test.domain;
 
 import com.jmisur.dto.Dto;
 
