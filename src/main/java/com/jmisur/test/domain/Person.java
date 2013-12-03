@@ -1,5 +1,7 @@
 package com.jmisur.test.domain;
 
+import java.math.BigDecimal;
+
 import com.jmisur.dto.Dto;
 
 /**
@@ -38,9 +40,9 @@ public class Person {
 		this.lastName = lastName;
 	}
 
-	public String getAllStuff() {
-		String a = "xxx";
-		return "all stuff" + a;
+	public String getSomeStuff(Person p, BigDecimal o) {
+		String a = "xxx" + p.getFirstName();
+		return "stuff" + a + o;
 	}
 
 	public boolean isAorB() {
@@ -51,7 +53,12 @@ public class Person {
 		}
 	}
 
-	public boolean setMaNameDude(String name, int what) {
+	public boolean setMaNameDude(String name, Integer what) {
+		firstName = name;
+		return what > 0;
+	}
+
+	public boolean setMaNameDude(String name, Long what) {
 		firstName = name;
 		return what > 0;
 	}

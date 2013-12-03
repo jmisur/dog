@@ -1,18 +1,18 @@
 package com.jmisur.test;
 
 import static com.jmisur.test.domain.XAddress.address;
+import static com.jmisur.test.domain.XPerson.Person;
 import static com.jmisur.test.domain.XPerson.person;
 
 import java.lang.reflect.Modifier;
 
+import com.jmisur.dto.AbstractGenerator;
 import com.jmisur.dto.Generator;
-import com.jmisur.dto.GeneratorHelper;
-import com.jmisur.dto.generator.GeneratorContext;
 import com.jmisur.dto.generator.XFieldBase;
 import com.jmisur.test.domain.Person;
 
-@GeneratorHelper
-public class MyGenerator implements Generator {
+@Generator
+public class MyGenerator extends AbstractGenerator {
 
 	// annotations @NotPublished
 	// default configuration - all fields with getters/setters, type to id
@@ -35,40 +35,44 @@ public class MyGenerator implements Generator {
 	// add annotations, serializable etc
 	// convert subobjects to X by default
 	// embed object asEmbedded().field(...).method(..)
+	// custom types in method params
 
-	public void generate(GeneratorContext c) {
+	@Override
+	public void generate() {
 		// default config -- generate all
-		c.generate("PersonData01").from(person);
-		c.generate("AddressData01").from(address);
+		generate("PersonData01").from(person);
+		generate("AddressData01").from(address);
 
 		// exclusion
-		c.generate("PersonData10").from(person).exclude(person.firstName);
-		c.generate("PersonData11").from(person).exclude(person.firstName, person.address);
-		c.generate("PersonData12").from(person).excludeAll().field(person.firstName);
-		c.generate("PersonData13").from(person).excludeAll().fields(person.firstName, person.lastName);
+		generate("PersonData10").from(person).exclude(person.firstName);
+		generate("PersonData11").from(person).exclude(person.firstName, person.address);
+		generate("PersonData12").from(person).excludeAll().field(person.firstName);
+		generate("PersonData13").from(person).excludeAll().fields(person.firstName, person.lastName);
 
 		// nested field
-		c.generate("PersonData14").from(person).field(person.address.name);
-		c.generate("PersonData15").from(person).field(person.address.name.as("addressName"));
+		generate("PersonData14").from(person).field(person.address.name);
+		generate("PersonData15").from(person).field(person.address.name.as("addressName"));
 
 		// custom fields & options
-		c.generate("PersonData20").from(person).field("fullName", String.class);
-		c.generate("PersonData21").from(person).field("fullName", String.class, Modifier.PROTECTED);
-		c.generate("PersonData22").from(person).field(c.field("fullName", String.class, Modifier.PUBLIC).noGetter().noSetter());
-		c.generate("PersonData23").from(person).field(c.stringField("fullName").noSetter());
-		c.generate("PersonData24").from(person).stringField("fullName");
-		c.generate("PersonData25").from(person).stringField("fullName").intField("age");
+		generate("PersonData20").from(person).field("fullName", String.class);
+		generate("PersonData21").from(person).field("fullName", String.class, Modifier.PROTECTED);
+		generate("PersonData22").from(person).field(field("fullName", String.class, Modifier.PUBLIC).noGetter().noSetter());
+		generate("PersonData23").from(person).field(stringField("fullName").noSetter());
+		generate("PersonData24").from(person).stringField("fullName");
+		generate("PersonData25").from(person).stringField("fullName").intField("age");
 
 		// overwrite field
-		c.generate("PersonData30").from(person).field(person.firstName.as("name"));
-		c.generate("PersonData31").from(person).field(person.address.as("addr", Modifier.PROTECTED));
-		c.generate("PersonData32").from(person).field(person.address.as("addr", Person.class, Modifier.PROTECTED));
-		XFieldBase<?> customAddressDto = c.generate("AddressData30").from(address).build();
-		c.generate("PersonData33").from(person).field(person.address.as("addr", customAddressDto, Modifier.PROTECTED));
+		generate("PersonData30").from(person).field(person.firstName.as("name"));
+		generate("PersonData31").from(person).field(person.address.as("addr", Modifier.PROTECTED));
+		generate("PersonData32").from(person).field(person.address.as("addr", Person.class, Modifier.PROTECTED));
+		XFieldBase<?> customAddressDto = generate("AddressData30").from(address).build();
+		generate("PersonData33").from(person).field(person.address.as("addr", customAddressDto, Modifier.PROTECTED));
 
 		// copy method
 		// c.generate("PersonData").from(person).method("getAllStuff");
-		c.generate("PersonData").from(person).method(person.isAorB()).method(person.setMaNameDude(String.class, Integer.class));
+		generate("PersonData40").from(person).method(person.isAorB());
+		generate("PersonData41").from(person).method(person.setMaNameDude(String, Integer));
+		generate("PersonData42").from(person).method(person.getSomeStuff(Person, BigDecimal));
 
 		// // package
 		// c.generate("PersonData").from(person);
@@ -87,4 +91,5 @@ public class MyGenerator implements Generator {
 		// c.generate("PersonData").from(person).hashCode(person.firstName, person.address);
 		// c.generate("PersonData").from(person).equalsAndHashCode(person.firstName, person.address);
 	}
+
 }

@@ -1,6 +1,8 @@
 package com.jmisur.test.domain;
 
 import com.jmisur.dto.generator.XField;
+import com.jmisur.dto.generator.XParam;
+import com.jmisur.test.domain.Address;
 import javax.annotation.Generated;
 
 /**
@@ -9,7 +11,11 @@ import javax.annotation.Generated;
 @Generated("Easily with JAnnocessor :)")
 public class XAddress extends XField<Address> {
 
+    public static final Address Address = null;
+
     public static final XAddress address = new XAddress();
+
+    private static XParam xparam;
 
     public final XField<String> id = new XField<String>("id", String.class, this);
 

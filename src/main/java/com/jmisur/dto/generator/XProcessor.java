@@ -13,7 +13,6 @@ import org.jannocessor.model.bean.structure.JavaClassBean;
 import org.jannocessor.model.executable.JavaConstructor;
 import org.jannocessor.model.executable.JavaMethod;
 import org.jannocessor.model.structure.JavaClass;
-import org.jannocessor.model.type.JavaPrimitiveType;
 import org.jannocessor.model.type.JavaType;
 import org.jannocessor.model.util.Classes;
 import org.jannocessor.model.util.Fields;
@@ -41,10 +40,9 @@ public class XProcessor extends AbstractGenerator<JavaClass> {
 			JavaClass xclass = createClass(model, name);
 			createDefaultConstructor(xclass);
 			createConstructor(model, xclass);
-			createStaticField(model, name, xclass);
+			createStaticFields(model, name, xclass);
 			List<JavaField> fields = createFields(model, xclass);
 			createGetFields(xclass, fields);
-
 			Set<String> gettersSetters = gettersSetters(xclass);
 			createMethods(model, xclass, gettersSetters);
 
@@ -56,36 +54,25 @@ public class XProcessor extends AbstractGenerator<JavaClass> {
 		for (JavaMethod method : model.getMethods()) {
 			String methodName = method.getName().getText();
 			if (!gettersSetters.contains(methodName)) {
+
 				StringBuilder params = new StringBuilder(", ");
 				List<JavaParameter> signatureParams = newArrayList();
 				for (JavaParameter param : method.getParameters()) {
-					params.append(param.getType().getSimpleName()).append(".class");
-					params.append(", ");
-					JavaParameter signatureParam = New.parameter(New.type("Class<%s>", getWrapper(param.getType()).getSimpleName()), param.getName().getText());
+					params.append("new ").append(XParam.class.getSimpleName()).append("(");
+					params.append(param.getType().getSimpleName()).append(".class").append(", ");
+					params.append("\"").append(param.getName().getText()).append("\"), ");
+
+					JavaParameter signatureParam = New.parameter(param.getType(), param.getName().getText());
 					signatureParams.add(signatureParam);
 				}
 				params.deleteCharAt(params.length() - 1);
 				params.deleteCharAt(params.length() - 1);
-				System.out.println("XXXXXXXXXXXXX " + params.toString());
+
 				JavaMethod methodRef = New.method(Methods.PUBLIC, XMethod.class, methodName, signatureParams);
 				methodRef.getBody().setHardcoded("return new %s(\"%s\", %s.class%s);", XMethod.class.getSimpleName(), methodName,
 						method.getReturnType().getSimpleName(), params.toString());
 				xclass.getMethods().add(methodRef);
 			}
-		}
-	}
-
-	private JavaType getWrapper(JavaType type) {
-		if (type instanceof JavaPrimitiveType) {
-			switch (type.getKind()) {
-			case INT:
-				System.out.println(Integer.class.getSimpleName());
-				return New.type(Integer.class);
-			default:
-				throw new IllegalArgumentException("Cannot handle primitive type " + type.getSimpleName());
-			}
-		} else {
-			return type;
 		}
 	}
 
@@ -151,11 +138,20 @@ public class XProcessor extends AbstractGenerator<JavaClass> {
 		return field;
 	}
 
-	private void createStaticField(JavaClass model, String name, JavaClass xclass) {
-		// static field
+	private void createStaticFields(JavaClass model, String name, JavaClass xclass) {
+		// type placeholder
+		JavaField placeholder = New.field(Fields.PUBLIC_STATIC_FINAL, model.getType(), model.getName().getCapitalized());
+		placeholder.getValue().setHardcoded("null");
+		xclass.getFields().add(placeholder);
+
+		// X instance
 		JavaField instance = New.field(Fields.PUBLIC_STATIC_FINAL, xclass.getType(), model.getName().getUncapitalized());
 		instance.getValue().setHardcoded("new %s()", name);
 		xclass.getFields().add(instance);
+
+		// TODO hack to import XParam
+		JavaField xparam = New.field(Fields.PRIVATE_STATIC, XParam.class, "xparam");
+		xclass.getFields().add(xparam);
 	}
 
 	private void createConstructor(JavaClass model, JavaClass xclass) {

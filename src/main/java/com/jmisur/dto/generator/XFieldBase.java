@@ -42,7 +42,7 @@ public class XFieldBase<T> {
 		return name;
 	}
 
-	protected Class<T> getTypeAsClass() {
+	public Class<T> getTypeAsClass() {
 		return type;
 	}
 

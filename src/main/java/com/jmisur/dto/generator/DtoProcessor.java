@@ -1,10 +1,20 @@
 package com.jmisur.dto.generator;
 
+import static com.google.common.collect.Lists.newArrayList;
 import static com.google.common.collect.Maps.newLinkedHashMap;
+import japa.parser.ParseException;
+import japa.parser.ast.CompilationUnit;
+import japa.parser.ast.body.BodyDeclaration;
+import japa.parser.ast.body.MethodDeclaration;
+import japa.parser.ast.body.Parameter;
+import japa.parser.ast.body.TypeDeclaration;
+import japa.parser.ast.stmt.Statement;
+import japa.parser.ast.visitor.CloneVisitor;
 
 import java.lang.reflect.Modifier;
 import java.util.Collection;
 import java.util.LinkedHashMap;
+import java.util.List;
 
 import org.jannocessor.collection.api.PowerList;
 import org.jannocessor.extra.processor.AbstractGenerator;
@@ -16,9 +26,10 @@ import org.jannocessor.model.structure.JavaClass;
 import org.jannocessor.model.util.Fields;
 import org.jannocessor.model.util.Methods;
 import org.jannocessor.model.util.New;
+import org.jannocessor.model.variable.JavaParameter;
 import org.jannocessor.processor.api.ProcessingContext;
 
-import com.jmisur.dto.Generator;
+import com.google.common.base.Joiner;
 
 public class DtoProcessor extends AbstractGenerator<JavaClass> {
 
@@ -34,48 +45,48 @@ public class DtoProcessor extends AbstractGenerator<JavaClass> {
 			Class<?> generatorClass = generator.getType().getTypeClass();
 			String generatorClassName = generatorClass.getCanonicalName();
 
-			if (!Generator.class.isAssignableFrom(generatorClass)) {
-				context.getLogger().error("Class {} does not implement {} interface", generatorClassName, Generator.class.getCanonicalName());
+			if (!com.jmisur.dto.AbstractGenerator.class.isAssignableFrom(generatorClass)) {
+				context.getLogger().error("Class {} does not implement {} interface", generatorClassName,
+						com.jmisur.dto.AbstractGenerator.class.getCanonicalName());
 			}
 
 			try {
-				GeneratorContext gc = new GeneratorContext();
-				Generator instance = (Generator) generatorClass.newInstance();
-				instance.generate(gc);
+				com.jmisur.dto.AbstractGenerator instance = (com.jmisur.dto.AbstractGenerator) generatorClass.newInstance();
+				instance.generate();
 
-				for (ClassGenerator<?> classGenerator : gc.getGenerators()) {
+				for (ClassGenerator<?> classGenerator : instance.getGenerators()) {
 					JavaClass dto = createClass(generator, classGenerator);
 					Collection<XFieldBase<?>> fields = createFields(classGenerator, dto);
 					createGettersSetters(dto, fields);
 
-					// for (String methodName : classGenerator.getCopyMethods()) {
-					// try {
-					// CompilationUnit cu = Helper.parserClass(null, classGenerator.getClassName());
-					// CompilationUnit x = (CompilationUnit) cu.accept(new CloneVisitor(), null);
-					//
-					// for (TypeDeclaration x2 : x.getTypes()) {
-					// if (x2.getName().equals(model.getName().getText())) {
-					// List<BodyDeclaration> members = x2.getMembers();
-					// for (BodyDeclaration member : members) {
-					// if (member instanceof MethodDeclaration) {
-					// MethodDeclaration methodMember = (MethodDeclaration) member;
-					// System.out.println(methodMember.getName());
-					// if (methodMember.getName().equals(method.getName().getText())) {
-					// JavaMethod methodCopy = New.method(Methods.PUBLIC, method.getReturnType(), method.getName().getText());
-					// List<Statement> statements = methodMember.getBody().getStmts();
-					// String sts = Joiner.on("\n").join(statements);
-					// methodCopy.getBody().setHardcoded(sts);
-					// xclass.getMethods().add(methodCopy);
-					// }
-					// }
-					// }
-					// }
-					// }
-					// } catch (ParseException e) {
-					// e.printStackTrace();
-					// }
+					for (XMethod method : classGenerator.getCopyMethods()) {
+						try {
+							CompilationUnit cu = Helper.parserClass(null, classGenerator.getSourceXClass().getTypeAsClass());
+							CompilationUnit x = (CompilationUnit) cu.accept(new CloneVisitor(), null);
 
-					// }
+							for (TypeDeclaration x2 : x.getTypes()) {
+								if (x2.getName().equals(classGenerator.getSourceXClass().getType().getSimpleName().getText())) {
+									List<BodyDeclaration> members = x2.getMembers();
+									for (BodyDeclaration member : members) {
+										if (member instanceof MethodDeclaration) {
+											MethodDeclaration methodMember = (MethodDeclaration) member;
+											if (methodMember.getName().equals(method.getName()) && paramsEquals(methodMember, method)) {
+												JavaMethod methodCopy = New.method(Methods.PUBLIC, method.getReturnType(), method.getName(),
+														asJavaParameters(method.getParams()));
+												List<Statement> statements = methodMember.getBody().getStmts();
+												String sts = Joiner.on("\n").join(statements);
+												methodCopy.getBody().setHardcoded(sts);
+												dto.getMethods().add(methodCopy);
+											}
+										}
+									}
+								}
+							}
+						} catch (ParseException e) {
+							e.printStackTrace();
+						}
+
+					}
 
 					context.generateCode(dto, isInDebugMode());
 				}
@@ -85,6 +96,41 @@ public class DtoProcessor extends AbstractGenerator<JavaClass> {
 				context.getLogger().error("Cannot instantiate generator class {}", generatorClassName, e);
 			}
 		}
+	}
+
+	private boolean paramsEquals(MethodDeclaration methodMember, XMethod method) {
+		List<Parameter> params1 = methodMember.getParameters();
+		List<XParam> params2 = method.getParams();
+
+		if (params1 == null) {
+			return params2.isEmpty() ? true : false;
+		} else {
+			int paramCount = params1.size();
+
+			if (paramCount != params2.size()) {
+				return false;
+			}
+
+			for (int i = 0; i < paramCount; i++) {
+				Parameter parameter = params1.get(i);
+				System.out.println(parameter.getType());
+				XParam parameter2 = params2.get(i);
+				System.out.println(parameter2.getClazz());
+
+				if (!parameter.getType().toString().equals(parameter2.getClazz().getSimpleName())) {
+					return false;
+				}
+			}
+			return true;
+		}
+	}
+
+	private List<JavaParameter> asJavaParameters(List<XParam> params) {
+		List<JavaParameter> result = newArrayList();
+		for (XParam param : params) {
+			result.add(New.parameter(param.getClazz(), param.getName()));
+		}
+		return result;
 	}
 
 	private void createGettersSetters(JavaClass dto, Collection<XFieldBase<?>> fields) {
