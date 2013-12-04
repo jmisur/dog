@@ -24,9 +24,7 @@ public class MyGenerator extends AbstractGenerator {
 	// comparable
 	// JSR303
 	// field getter/setter options, nogetter
-	// copying included type Person-Address
 	// type -> id
-	// remember source fields for mapping
 	// multiple source classes
 	// package
 	// validate inputs / strings, classnames, method names, package name, field names
@@ -35,7 +33,10 @@ public class MyGenerator extends AbstractGenerator {
 	// add annotations, serializable etc
 	// convert subobjects to X by default
 	// embed object asEmbedded().field(...).method(..)
-	// custom types in method params
+	// custom types/dtos in method params/return types - change via builder
+	// all builder methods on field/method return new instance, otherwise it alters Xclass default fields
+	// enhancing with plugins via Xprocessor/DtoProcessor/XFieldBase subtype
+	// XField.build() return something else
 
 	@Override
 	public void generate() {
@@ -50,16 +51,19 @@ public class MyGenerator extends AbstractGenerator {
 		generate("PersonData13").from(person).excludeAll().fields(person.firstName, person.lastName);
 
 		// nested field
-		generate("PersonData14").from(person).field(person.address.name);
+		generate("PersonData14").from(person).field(person.address.name); // TODO exclude address here?
 		generate("PersonData15").from(person).field(person.address.name.as("addressName"));
 
 		// custom fields & options
 		generate("PersonData20").from(person).field("fullName", String.class);
 		generate("PersonData21").from(person).field("fullName", String.class, Modifier.PROTECTED);
 		generate("PersonData22").from(person).field(field("fullName", String.class, Modifier.PUBLIC).noGetter().noSetter());
-		generate("PersonData23").from(person).field(stringField("fullName").noSetter());
 		generate("PersonData24").from(person).stringField("fullName");
 		generate("PersonData25").from(person).stringField("fullName").intField("age");
+
+		// field options
+		generate("PersonData26").from(person).field(person.firstName.noGetter().copySetter());
+		generate("PersonData27").from(person).field(stringField("fullName").noSetter()); // TODO should not have copyGetter method
 
 		// overwrite field
 		generate("PersonData30").from(person).field(person.firstName.as("name"));
@@ -69,10 +73,13 @@ public class MyGenerator extends AbstractGenerator {
 		generate("PersonData33").from(person).field(person.address.as("addr", customAddressDto, Modifier.PROTECTED));
 
 		// copy method
-		// c.generate("PersonData").from(person).method("getAllStuff");
 		generate("PersonData40").from(person).method(person.isAorB());
+		// copy method with specific params
 		generate("PersonData41").from(person).method(person.setMaNameDude(String, Integer));
+		// copy method with custom params
 		generate("PersonData42").from(person).method(person.getSomeStuff(Person, BigDecimal));
+		// copy method with domain class exchange to dto class
+		// generate("PersonData43").from(person).method(person.getSomeStuff(Person, BigDecimal));
 
 		// // package
 		// c.generate("PersonData").from(person);

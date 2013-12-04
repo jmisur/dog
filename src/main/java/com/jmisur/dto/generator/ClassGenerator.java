@@ -38,7 +38,7 @@ public class ClassGenerator<T> {
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public XFieldBase<?> build() {
-		return new XFieldBase(className, className, 0, sourceXClass);
+		return new XFieldBase(className, null, className, 0, sourceXClass);
 	}
 
 	public ClassGenerator<T> field(XFieldBase<?> field) {

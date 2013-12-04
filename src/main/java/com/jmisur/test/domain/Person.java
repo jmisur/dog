@@ -21,6 +21,7 @@ public class Person {
 	}
 
 	public void setFirstName(String firstName) {
+		System.out.println("Setting firstName " + firstName);
 		this.firstName = firstName;
 	}
 

@@ -26,6 +26,7 @@ import org.jannocessor.model.structure.JavaClass;
 import org.jannocessor.model.util.Fields;
 import org.jannocessor.model.util.Methods;
 import org.jannocessor.model.util.New;
+import org.jannocessor.model.variable.JavaField;
 import org.jannocessor.model.variable.JavaParameter;
 import org.jannocessor.processor.api.ProcessingContext;
 
@@ -61,6 +62,7 @@ public class DtoProcessor extends AbstractGenerator<JavaClass> {
 
 					for (XMethod method : classGenerator.getCopyMethods()) {
 						try {
+							System.out.println("Wanted to parse: " + classGenerator.getSourceXClass());
 							CompilationUnit cu = Helper.parserClass(null, classGenerator.getSourceXClass().getTypeAsClass());
 							CompilationUnit x = (CompilationUnit) cu.accept(new CloneVisitor(), null);
 
@@ -152,7 +154,9 @@ public class DtoProcessor extends AbstractGenerator<JavaClass> {
 	private Collection<XFieldBase<?>> createFields(ClassGenerator<?> classGenerator, JavaClass dto) {
 		Collection<XFieldBase<?>> fields = mergeFields(classGenerator);
 		for (XFieldBase<?> field : fields) {
-			dto.getFields().add(New.field(getModifier(field.getModifier()), field.getType(), field.getName()));
+			JavaField javaField = New.field(getModifier(field.getModifier()), field.getType(), field.getName());
+			dto.getFields().add(javaField);
+			System.out.println(dto.getName().getText() + ": " + javaField.getName().getText());
 		}
 		return fields;
 	}
@@ -190,12 +194,15 @@ public class DtoProcessor extends AbstractGenerator<JavaClass> {
 			fields.remove(field.getName());
 		}
 		for (XFieldBase<?> field : classGenerator.getFields()) {
-			if (field.getClass() == XFieldBase.class && field.getSource() != null) {
-				fields.put(field.getSource().getName(), field);
-			} else {
+			if (field.getSource() == null || field.getSource() == classGenerator.getSourceXClass()) {
+				// is existing or custom without source
 				fields.put(field.getName(), field);
+			} else {
+				// custom field based on existing, overwrite under original name
+				fields.put(field.getSource().getName(), field);
 			}
 		}
+		System.out.println("FIELDS: " + fields.keySet());
 		return fields.values();
 	}
 }
