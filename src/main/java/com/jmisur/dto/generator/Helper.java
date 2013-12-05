@@ -15,7 +15,7 @@ public class Helper {
 
 	private static InputStream getInputStream(String sourceFolder, Class<?> clazz) {
 		String name = "src/main/java/" + clazz.getCanonicalName().replace('.', '/') + ".java";
-		System.out.println(name);
+		System.out.println("PARSING: " + name);
 		FileInputStream absolutePath;
 		try {
 			absolutePath = new FileInputStream(name);

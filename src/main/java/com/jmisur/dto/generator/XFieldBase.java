@@ -46,9 +46,7 @@ public class XFieldBase<T> {
 	}
 
 	public XFieldBase<T> noGetter() {
-		XFieldBase<T> x = clone(getter, false);
-		System.out.println("NO GETTER: " + x);
-		return x;
+		return clone(getter, false);
 	}
 
 	public String getName() {
@@ -78,9 +76,6 @@ public class XFieldBase<T> {
 	private <X> X get(XOption<X> key) {
 		@SuppressWarnings("unchecked")
 		X value = (X) options.get(key);
-		if (name.equals("fullName")) {
-			System.out.println("GET: " + value + ", def: " + key.getDefaultValue());
-		}
 		return value != null ? value : key.getDefaultValue();
 	}
 
@@ -93,11 +88,11 @@ public class XFieldBase<T> {
 	};
 
 	public XFieldBase<T> copyGetter() {
-		return clone(copyGetter, true);
+		return clone(getter, false).clone(copyGetter, true);
 	}
 
 	public XFieldBase<T> copySetter() {
-		return clone(copySetter, true);
+		return clone(setter, false).clone(copySetter, true);
 	}
 
 	public boolean isCopyGetter() {

@@ -63,7 +63,8 @@ public class MyGenerator extends AbstractGenerator {
 
 		// field options
 		generate("PersonData26").from(person).field(person.firstName.noGetter().copySetter());
-		generate("PersonData27").from(person).field(stringField("fullName").noSetter()); // TODO should not have copyGetter method
+		generate("PersonData27").from(person).field(person.firstName.copySetter().copyGetter());
+		generate("PersonData28").from(person).field(stringField("fullName").noSetter()); // TODO builder should not have copyGetter method
 
 		// overwrite field
 		generate("PersonData30").from(person).field(person.firstName.as("name"));

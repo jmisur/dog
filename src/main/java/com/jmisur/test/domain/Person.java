@@ -17,6 +17,7 @@ public class Person {
 	private Address address;
 
 	public String getFirstName() {
+		System.out.println("Getting firstName " + firstName);
 		return firstName;
 	}
 

@@ -14,6 +14,7 @@ public class PersonData26 {
     private Address address;
 
     public void setFirstName(String firstName) {
+        System.out.println("Setting firstName " + firstName);
         this.firstName = firstName;
     }
 
