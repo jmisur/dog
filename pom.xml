@@ -22,7 +22,7 @@
 		<dependency>
 			<groupId>com.googlecode.jannocessor</groupId>
 			<artifactId>jannocessor</artifactId>
-			<version>0.7.2</version>
+			<version>0.7.4</version>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
@@ -42,13 +42,13 @@
 			<plugin>
 				<groupId>com.googlecode.jannocessor</groupId>
 				<artifactId>jannocessor-maven-plugin</artifactId>
-				<version>0.7.2</version>
+				<version>0.7.4</version>
 				<executions>
 					<execution>
 						<id>generate-code</id>
-						<phase>generate-sources</phase>
+						<phase>generate-test-sources</phase>
 						<goals>
-							<goal>process</goal>
+							<goal>process-test</goal>
 						</goals>
 					</execution>
 				</executions>

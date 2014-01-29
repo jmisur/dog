@@ -69,7 +69,7 @@ public class DtoProcessor extends AbstractGenerator<JavaClass> {
 			Collection<XFieldBase<?>> fields = createFields(classGenerator, dto);
 			createGettersSetters(dto, fields, context, classGenerator);
 			createCopyMethods(context, classGenerator, dto, fields);
-			context.generateCode(dto, isInDebugMode());
+			generate(dto);
 		}
 	}
 

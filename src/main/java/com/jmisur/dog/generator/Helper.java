@@ -16,12 +16,17 @@ public class Helper {
 	private static InputStream getInputStream(String sourceFolder, Class<?> clazz) {
 		String name = "src/main/java/" + clazz.getCanonicalName().replace('.', '/') + ".java";
 		System.out.println("PARSING: " + name);
-		FileInputStream absolutePath;
 		try {
-			absolutePath = new FileInputStream(name);
-			return absolutePath;
+			return new FileInputStream(name);
 		} catch (FileNotFoundException e) {
-			e.printStackTrace();
+			// quick hack
+			name = "src/test/java/" + clazz.getCanonicalName().replace('.', '/') + ".java";
+			System.out.println("PARSING: " + name);
+			try {
+				return new FileInputStream(name);
+			} catch (FileNotFoundException e1) {
+				System.err.println("Cannot find source of " + clazz);
+			}
 		}
 		return null;
 	}
