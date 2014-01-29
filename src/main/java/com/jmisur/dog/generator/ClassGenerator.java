@@ -1,4 +1,4 @@
-package com.jmisur.dto.generator;
+package com.jmisur.dog.generator;
 
 import static com.google.common.collect.Lists.newArrayList;
 

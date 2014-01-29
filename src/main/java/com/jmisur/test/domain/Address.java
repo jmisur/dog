@@ -1,6 +1,6 @@
 package com.jmisur.test.domain;
 
-import com.jmisur.dto.Dto;
+import com.jmisur.dog.Dto;
 
 @Dto
 public class Address {

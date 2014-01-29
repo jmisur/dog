@@ -4,10 +4,10 @@ import org.jannocessor.model.structure.JavaClass;
 import org.jannocessor.processor.annotation.Annotated;
 import org.jannocessor.processor.annotation.Types;
 
-import com.jmisur.dto.Dto;
-import com.jmisur.dto.Generator;
-import com.jmisur.dto.generator.DtoProcessor;
-import com.jmisur.dto.generator.XProcessor;
+import com.jmisur.dog.Dto;
+import com.jmisur.dog.Generator;
+import com.jmisur.dog.generator.DtoProcessor;
+import com.jmisur.dog.generator.XProcessor;
 
 public class Processors {
 

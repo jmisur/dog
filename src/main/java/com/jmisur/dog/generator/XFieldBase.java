@@ -1,4 +1,4 @@
-package com.jmisur.dto.generator;
+package com.jmisur.dog.generator;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.jannocessor.model.type.JavaType;

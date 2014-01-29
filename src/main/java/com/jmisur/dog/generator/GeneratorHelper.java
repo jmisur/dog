@@ -1,4 +1,4 @@
-package com.jmisur.dto.generator;
+package com.jmisur.dog.generator;
 
 public class GeneratorHelper {
 

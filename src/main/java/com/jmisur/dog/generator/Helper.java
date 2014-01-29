@@ -1,4 +1,4 @@
-package com.jmisur.dto.generator;
+package com.jmisur.dog.generator;
 
 import japa.parser.JavaParser;
 import japa.parser.ParseException;

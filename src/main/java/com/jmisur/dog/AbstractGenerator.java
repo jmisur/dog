@@ -1,13 +1,13 @@
-package com.jmisur.dto;
+package com.jmisur.dog;
 
 import java.lang.reflect.Modifier;
 import java.math.BigDecimal;
 import java.util.List;
 
-import com.jmisur.dto.generator.ClassGenerator;
-import com.jmisur.dto.generator.GeneratorContext;
-import com.jmisur.dto.generator.GeneratorHelper;
-import com.jmisur.dto.generator.XFieldBase;
+import com.jmisur.dog.generator.ClassGenerator;
+import com.jmisur.dog.generator.GeneratorContext;
+import com.jmisur.dog.generator.GeneratorHelper;
+import com.jmisur.dog.generator.XFieldBase;
 
 public abstract class AbstractGenerator {
 	protected static final String String = null;

@@ -1,8 +1,9 @@
 package com.jmisur.test.domain;
 
-import com.jmisur.dto.generator.XField;
-import com.jmisur.dto.generator.XParam;
+import com.jmisur.dog.generator.XField;
+import com.jmisur.dog.generator.XParam;
 import com.jmisur.test.domain.Address;
+
 import javax.annotation.Generated;
 
 /**

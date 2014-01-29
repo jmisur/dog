@@ -1,10 +1,12 @@
 package com.jmisur.test.domain;
 
-import com.jmisur.dto.generator.XField;
-import com.jmisur.dto.generator.XMethod;
-import com.jmisur.dto.generator.XParam;
+import com.jmisur.dog.generator.XField;
+import com.jmisur.dog.generator.XMethod;
+import com.jmisur.dog.generator.XParam;
 import com.jmisur.test.domain.Person;
+
 import java.math.BigDecimal;
+
 import javax.annotation.Generated;
 
 /**

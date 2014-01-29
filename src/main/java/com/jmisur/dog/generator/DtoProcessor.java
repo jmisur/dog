@@ -1,4 +1,4 @@
-package com.jmisur.dto.generator;
+package com.jmisur.dog.generator;
 
 import static com.google.common.collect.Lists.newArrayList;
 import static com.google.common.collect.Maps.newHashMap;
@@ -53,7 +53,7 @@ public class DtoProcessor extends AbstractGenerator<JavaClass> {
 				break;
 			}
 
-			com.jmisur.dto.AbstractGenerator instance = createGeneratorInstance(context, generatorClass);
+			com.jmisur.dog.AbstractGenerator instance = createGeneratorInstance(context, generatorClass);
 			if (instance == null) {
 				break;
 			}
@@ -63,7 +63,7 @@ public class DtoProcessor extends AbstractGenerator<JavaClass> {
 		}
 	}
 
-	private void processClassGenerators(ProcessingContext context, JavaClass generator, com.jmisur.dto.AbstractGenerator instance) {
+	private void processClassGenerators(ProcessingContext context, JavaClass generator, com.jmisur.dog.AbstractGenerator instance) {
 		for (ClassGenerator<?> classGenerator : instance.getGenerators()) {
 			JavaClass dto = createClass(generator, classGenerator);
 			Collection<XFieldBase<?>> fields = createFields(classGenerator, dto);
@@ -130,9 +130,9 @@ public class DtoProcessor extends AbstractGenerator<JavaClass> {
 	}
 
 	private boolean validGenerator(ProcessingContext context, Class<?> generatorClass) {
-		if (!com.jmisur.dto.AbstractGenerator.class.isAssignableFrom(generatorClass)) {
+		if (!com.jmisur.dog.AbstractGenerator.class.isAssignableFrom(generatorClass)) {
 			context.getLogger().error("Class {} does not implement {} interface", generatorClass.getCanonicalName(),
-					com.jmisur.dto.AbstractGenerator.class.getCanonicalName());
+					com.jmisur.dog.AbstractGenerator.class.getCanonicalName());
 			return false;
 		}
 
@@ -147,9 +147,9 @@ public class DtoProcessor extends AbstractGenerator<JavaClass> {
 		dto.getMethods().add(methodCopy);
 	}
 
-	private com.jmisur.dto.AbstractGenerator createGeneratorInstance(ProcessingContext context, Class<?> generatorClass) {
+	private com.jmisur.dog.AbstractGenerator createGeneratorInstance(ProcessingContext context, Class<?> generatorClass) {
 		try {
-			return (com.jmisur.dto.AbstractGenerator) generatorClass.newInstance();
+			return (com.jmisur.dog.AbstractGenerator) generatorClass.newInstance();
 		} catch (InstantiationException e) {
 			context.getLogger().error("Cannot instantiate generator class {}", generatorClass.getCanonicalName(), e);
 		} catch (IllegalAccessException e) {

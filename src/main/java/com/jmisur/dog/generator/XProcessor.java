@@ -1,4 +1,4 @@
-package com.jmisur.dto.generator;
+package com.jmisur.dog.generator;
 
 import static com.google.common.collect.Lists.newArrayList;
 import static com.google.common.collect.Sets.newHashSet;
@@ -22,7 +22,7 @@ import org.jannocessor.model.variable.JavaField;
 import org.jannocessor.model.variable.JavaParameter;
 import org.jannocessor.processor.api.ProcessingContext;
 
-import com.jmisur.dto.Dto;
+import com.jmisur.dog.Dto;
 
 public class XProcessor extends AbstractGenerator<JavaClass> {
 

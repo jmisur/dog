@@ -1,4 +1,4 @@
-package com.jmisur.dto;
+package com.jmisur.dog;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

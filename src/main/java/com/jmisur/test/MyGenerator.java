@@ -6,9 +6,9 @@ import static com.jmisur.test.domain.XPerson.person;
 
 import java.lang.reflect.Modifier;
 
-import com.jmisur.dto.AbstractGenerator;
-import com.jmisur.dto.Generator;
-import com.jmisur.dto.generator.XFieldBase;
+import com.jmisur.dog.AbstractGenerator;
+import com.jmisur.dog.Generator;
+import com.jmisur.dog.generator.XFieldBase;
 import com.jmisur.test.domain.Person;
 
 @Generator
