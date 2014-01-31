@@ -5,6 +5,7 @@ import static com.jmisur.dog.person.XPerson.Person;
 import static com.jmisur.dog.person.XPerson.person;
 
 import java.lang.reflect.Modifier;
+import java.util.ArrayList;
 
 import com.jmisur.dog.AbstractGenerator;
 import com.jmisur.dog.Generator;
@@ -79,6 +80,11 @@ public class MyGenerator extends AbstractGenerator {
 		generate("PersonData41").from(person).method(person.setSomeInt(String, Integer));
 		// copy method with custom params
 		generate("PersonData42").from(person).method(person.setSomeInt(String, Int)).method(person.getSomeStuff(Person, BigDecimal));
+
+		// superclass
+		XFieldBase<?> superc = generate("PersonData50Super").from(person).exclude(person.address).superclass(ArrayList.class).build();
+		generate("PersonData50").from(person).excludeAll().field(person.address).superclass(superc);
+
 		// copy method with domain class exchange to dto class
 		// generate("PersonData43").from(person).method(person.getSomeStuff(Person, BigDecimal));
 

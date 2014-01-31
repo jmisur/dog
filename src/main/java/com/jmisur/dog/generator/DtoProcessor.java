@@ -260,6 +260,9 @@ public class DtoProcessor extends AbstractGenerator<JavaClass> {
 		JavaClass dto = New.classs(classGenerator.getClassName());
 		((JavaClassBean) dto).setParent(generator.getParent());
 		((JavaClassBean) dto).setType(New.type(classGenerator.getClassName()));
+		if (classGenerator.getSuperclass() != null) {
+			((JavaClassBean) dto).setSuperclass(New.type(classGenerator.getSuperclass()));
+		}
 		return dto;
 	}
 

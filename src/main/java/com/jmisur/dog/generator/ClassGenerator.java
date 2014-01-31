@@ -19,6 +19,7 @@ public class ClassGenerator<T> {
 	private List<XFieldBase<?>> equals = new ArrayList<XFieldBase<?>>();
 	private List<XFieldBase<?>> hashCode = new ArrayList<XFieldBase<?>>();
 	private boolean excludeAll;
+	private String superclass;
 
 	public ClassGenerator(String className, String packageName, XField<T> sourceXClass) {
 		this.className = className;
@@ -169,6 +170,19 @@ public class ClassGenerator<T> {
 
 	public boolean isExcludeAll() {
 		return excludeAll;
+	}
+
+	public ClassGenerator<T> superclass(Class<?> superclass) {
+		this.superclass = superclass.getCanonicalName();
+		return this;
+	}
+
+	public void superclass(XFieldBase<?> superc) {
+		this.superclass = superc.getName();
+	}
+
+	public String getSuperclass() {
+		return superclass;
 	}
 
 }
