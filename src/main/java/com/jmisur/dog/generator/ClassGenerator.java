@@ -20,6 +20,7 @@ public class ClassGenerator<T> {
 	private List<XFieldBase<?>> hashCode = new ArrayList<XFieldBase<?>>();
 	private boolean excludeAll;
 	private String superclass;
+	private List<Class<?>> interfaces = new ArrayList<Class<?>>();
 
 	public ClassGenerator(String className, String packageName, XField<T> sourceXClass) {
 		this.className = className;
@@ -183,6 +184,15 @@ public class ClassGenerator<T> {
 
 	public String getSuperclass() {
 		return superclass;
+	}
+
+	public ClassGenerator<T> interfaces(Class<?>... interfaces) {
+		this.interfaces.addAll(Arrays.asList(interfaces));
+		return this;
+	}
+
+	public List<Class<?>> getInterfaces() {
+		return interfaces;
 	}
 
 }

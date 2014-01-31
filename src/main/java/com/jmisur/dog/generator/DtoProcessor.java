@@ -263,6 +263,10 @@ public class DtoProcessor extends AbstractGenerator<JavaClass> {
 		if (classGenerator.getSuperclass() != null) {
 			((JavaClassBean) dto).setSuperclass(New.type(classGenerator.getSuperclass()));
 		}
+		List<Class<?>> interfaces = classGenerator.getInterfaces();
+		if (interfaces != null) {
+			((JavaClassBean) dto).setInterfaces(New.types(interfaces.toArray(new Class<?>[interfaces.size()])));
+		}
 		return dto;
 	}
 

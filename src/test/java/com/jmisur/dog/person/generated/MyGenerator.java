@@ -4,6 +4,7 @@ import static com.jmisur.dog.person.XAddress.address;
 import static com.jmisur.dog.person.XPerson.Person;
 import static com.jmisur.dog.person.XPerson.person;
 
+import java.io.Serializable;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 
@@ -30,7 +31,7 @@ public class MyGenerator extends AbstractGenerator {
 	// package
 	// validate inputs / strings, classnames, method names, package name, field names
 	// superclass / hierarchy
-	// interface
+	// interface - serializable().supressWarnings()/defaultSerial()/generatedSerial()
 	// add annotations, serializable etc
 	// convert subobjects to X by default
 	// embed object asEmbedded().field(...).method(..)
@@ -85,8 +86,12 @@ public class MyGenerator extends AbstractGenerator {
 		XFieldBase<?> superc = generate("PersonData50Super").from(person).exclude(person.address).superclass(ArrayList.class).build();
 		generate("PersonData50").from(person).excludeAll().field(person.address).superclass(superc);
 
+		// interface
+		generate("PersonData51").from(person).interfaces(Serializable.class, Cloneable.class);
+		// abstract, package, default...
+
 		// copy method with domain class exchange to dto class
-		// generate("PersonData43").from(person).method(person.getSomeStuff(Person, BigDecimal));
+		// generate("PersonData43").from(person).method(person.getSomeStuff(QPerson, BigDecimal));
 
 		// // package
 		// c.generate("PersonData").from(person);
