@@ -55,13 +55,18 @@ public class Person {
 		}
 	}
 
-	public boolean setMaNameDude(String name, Integer what) {
+	public boolean setSomeInt(String name, Integer what) {
 		firstName = name;
 		return what > 0;
 	}
 
-	public boolean setMaNameDude(String name, Long what) {
+	public boolean setSomeInt(String name, int what) {
 		firstName = name;
 		return what > 0;
+	}
+
+	public boolean setSomeObject(String name, Object what) {
+		firstName = name;
+		return true;
 	}
 }

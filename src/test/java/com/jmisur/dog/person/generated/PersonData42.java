@@ -41,6 +41,11 @@ public class PersonData42 {
         this.address = address;
     }
 
+    public boolean setSomeInt(String name, int what) {
+        firstName = name;
+        return what > 0;
+    }
+
     public String getSomeStuff(Person p, BigDecimal o) {
         String a = "xxx" + p.getFirstName();
         return "stuff" + a + o;

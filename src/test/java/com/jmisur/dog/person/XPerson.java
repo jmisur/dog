@@ -45,12 +45,16 @@ public class XPerson extends XField<Person> {
         return new XMethod("isAorB", boolean.class);
     }
 
-    public XMethod setMaNameDude(String name, Integer what) {
-        return new XMethod("setMaNameDude", boolean.class, new XParam(String.class, "name"), new XParam(Integer.class, "what"));
+    public XMethod setSomeInt(String name, Integer what) {
+        return new XMethod("setSomeInt", boolean.class, new XParam(String.class, "name"), new XParam(Integer.class, "what"));
     }
 
-    public XMethod setMaNameDude(String name, Long what) {
-        return new XMethod("setMaNameDude", boolean.class, new XParam(String.class, "name"), new XParam(Long.class, "what"));
+    public XMethod setSomeInt(String name, int what) {
+        return new XMethod("setSomeInt", boolean.class, new XParam(String.class, "name"), new XParam(int.class, "what"));
+    }
+
+    public XMethod setSomeObject(String name, Object what) {
+        return new XMethod("setSomeObject", boolean.class, new XParam(String.class, "name"), new XParam(Object.class, "what"));
     }
 
 }

@@ -39,7 +39,7 @@ public class PersonData41 {
         this.address = address;
     }
 
-    public boolean setMaNameDude(String name, Integer what) {
+    public boolean setSomeInt(String name, Integer what) {
         firstName = name;
         return what > 0;
     }

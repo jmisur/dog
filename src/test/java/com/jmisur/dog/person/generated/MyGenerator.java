@@ -76,9 +76,9 @@ public class MyGenerator extends AbstractGenerator {
 		// copy method
 		generate("PersonData40").from(person).method(person.isAorB());
 		// copy method with specific params
-		generate("PersonData41").from(person).method(person.setMaNameDude(String, Integer));
+		generate("PersonData41").from(person).method(person.setSomeInt(String, Integer));
 		// copy method with custom params
-		generate("PersonData42").from(person).method(person.getSomeStuff(Person, BigDecimal));
+		generate("PersonData42").from(person).method(person.setSomeInt(String, Int)).method(person.getSomeStuff(Person, BigDecimal));
 		// copy method with domain class exchange to dto class
 		// generate("PersonData43").from(person).method(person.getSomeStuff(Person, BigDecimal));
 

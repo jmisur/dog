@@ -11,7 +11,8 @@ import com.jmisur.dog.generator.XFieldBase;
 
 public abstract class AbstractGenerator {
 	protected static final String String = null;
-	protected static final int Integer = 0;
+	protected static final Integer Integer = null;
+	protected static final int Int = 0;
 	protected static final long Long = 0;
 	protected static final Object Object = null;
 	protected static final BigDecimal BigDecimal = null;
