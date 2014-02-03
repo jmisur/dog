@@ -90,7 +90,11 @@ public class ClassGenerator<T> {
 	}
 
 	public ClassGenerator<T> equals(XFieldBase<?>... fields) {
-		equals.addAll(Arrays.asList(fields));
+		for (XFieldBase<?> field : fields) {
+			checkSource(field);
+			// verify field exist in fields..?
+			equals.add(field);
+		}
 		return this;
 	}
 
@@ -119,7 +123,11 @@ public class ClassGenerator<T> {
 	}
 
 	public ClassGenerator<T> hashCode(XFieldBase<?>... fields) {
-		hashCode.addAll(Arrays.asList(fields));
+		for (XFieldBase<?> field : fields) {
+			checkSource(field);
+			// verify field exist in fields..?
+			hashCode.add(field);
+		}
 		return this;
 	}
 
