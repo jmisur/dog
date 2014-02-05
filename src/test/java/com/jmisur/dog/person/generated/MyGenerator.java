@@ -17,6 +17,7 @@ import static com.jmisur.dog.person.XPerson.person;
 @Generator
 public class MyGenerator extends AbstractGenerator {
 
+	// why ClassGenerator must be public janocessor
 	// annotations @NotPublished
 	// default configuration - all fields with getters/setters, type to id
 	// exclusion
@@ -101,7 +102,9 @@ public class MyGenerator extends AbstractGenerator {
 		package_("com.jmisur.dog.car.generated");
 		generate("Car03").from(car);
 
-		// abstract, package, default...
+		// abstract/default/final
+		generate("Car10").from(car).abstract_();
+		generate("Car11").from(car).default_().final_();
 
 		// copy method with domain class exchange to dto class
 		// generate("PersonData43").from(person).method(person.getSomeStuff(QPerson, BigDecimal));

@@ -10,6 +10,7 @@ import japa.parser.ast.stmt.Statement;
 import japa.parser.ast.visitor.CloneVisitor;
 
 import java.lang.reflect.Modifier;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -23,6 +24,7 @@ import org.jannocessor.model.bean.NameBean;
 import org.jannocessor.model.bean.structure.JavaClassBean;
 import org.jannocessor.model.executable.JavaMethod;
 import org.jannocessor.model.modifier.FieldModifiers;
+import org.jannocessor.model.modifier.value.ClassModifierValue;
 import org.jannocessor.model.structure.JavaClass;
 import org.jannocessor.model.util.Fields;
 import org.jannocessor.model.util.Methods;
@@ -259,19 +261,34 @@ public class DtoProcessor extends AbstractGenerator<JavaClass> {
 
 	private JavaClass createClass(JavaClass generator, ClassGenerator<?> classGenerator) {
 		JavaClassBean dto = (JavaClassBean) New.classs(classGenerator.getClassName());
+
+		// package
 		if (classGenerator.getPackageName() != null) {
 			dto.setParent(New.packagee(classGenerator.getPackageName()));
 		} else {
 			dto.setParent(generator.getParent());
 		}
+
+		// class name
 		dto.setType(New.type(classGenerator.getClassName()));
+
+		// superclass
 		if (classGenerator.getSuperclass() != null) {
 			dto.setSuperclass(New.type(classGenerator.getSuperclass()));
 		}
+
+		// interfaces
 		List<Class<?>> interfaces = classGenerator.getInterfaces();
 		if (interfaces != null) {
 			dto.setInterfaces(New.types(interfaces.toArray(new Class<?>[interfaces.size()])));
 		}
+
+		// modifiers
+		List<ClassModifierValue> modifiers = new ArrayList<ClassModifierValue>();
+		if (!classGenerator.isDefault()) modifiers.add(ClassModifierValue.PUBLIC);
+		if (classGenerator.isFinal()) modifiers.add(ClassModifierValue.FINAL);
+		if (classGenerator.isAbstract()) modifiers.add(ClassModifierValue.ABSTRACT);
+		dto.setModifiers(New.classModifiers(modifiers.toArray(new ClassModifierValue[modifiers.size()])));
 		return dto;
 	}
 

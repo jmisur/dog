@@ -1,7 +1,5 @@
 package com.jmisur.dog.generator;
 
-import static com.google.common.collect.Lists.newArrayList;
-
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -23,6 +21,9 @@ public class ClassGenerator<T> {
 	private boolean excludeAll;
 	private String superclass;
 	private final List<Class<?>> interfaces = new ArrayList<Class<?>>();
+	private boolean abstract_;
+	private boolean default_;
+	private boolean final_;
 
 	public ClassGenerator(String className, String packageName, XField<T> sourceXClass) {
 		this.className = className;
@@ -208,5 +209,32 @@ public class ClassGenerator<T> {
 
 	public void package_(String pkg) {
 		this.packageName = pkg;
+	}
+
+	public ClassGenerator<T> abstract_() {
+		this.abstract_ = true;
+		return this;
+	}
+
+	public boolean isAbstract() {
+		return abstract_;
+	}
+
+	public ClassGenerator<T> default_() {
+		this.default_ = true;
+		return this;
+	}
+
+	public boolean isDefault() {
+		return default_;
+	}
+
+	public ClassGenerator<T> final_() {
+		this.final_ = true;
+		return this;
+	}
+
+	public boolean isFinal() {
+		return final_;
 	}
 }
