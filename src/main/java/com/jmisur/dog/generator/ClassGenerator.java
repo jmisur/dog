@@ -7,20 +7,22 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import static com.google.common.collect.Lists.newArrayList;
+
 public class ClassGenerator<T> {
 
-	private String className;
+	private final String className;
 	private String packageName;
-	private XField<T> sourceXClass;
-	private List<XFieldBase<?>> fields = new ArrayList<XFieldBase<?>>();
-	private List<XField<?>> excludedFields = new ArrayList<XField<?>>();
-	private List<MethodReference> methods = new ArrayList<MethodReference>();
-	private List<XMethod> copyMethods = new ArrayList<XMethod>();
-	private List<XFieldBase<?>> equals = new ArrayList<XFieldBase<?>>();
-	private List<XFieldBase<?>> hashCode = new ArrayList<XFieldBase<?>>();
+	private final XField<T> sourceXClass;
+	private final List<XFieldBase<?>> fields = new ArrayList<XFieldBase<?>>();
+	private final List<XField<?>> excludedFields = new ArrayList<XField<?>>();
+	private final List<MethodReference> methods = new ArrayList<MethodReference>();
+	private final List<XMethod> copyMethods = new ArrayList<XMethod>();
+	private final List<XFieldBase<?>> equals = new ArrayList<XFieldBase<?>>();
+	private final List<XFieldBase<?>> hashCode = new ArrayList<XFieldBase<?>>();
 	private boolean excludeAll;
 	private String superclass;
-	private List<Class<?>> interfaces = new ArrayList<Class<?>>();
+	private final List<Class<?>> interfaces = new ArrayList<Class<?>>();
 
 	public ClassGenerator(String className, String packageName, XField<T> sourceXClass) {
 		this.className = className;
@@ -38,7 +40,7 @@ public class ClassGenerator<T> {
 		return this;
 	}
 
-	@SuppressWarnings({ "rawtypes", "unchecked" })
+	@SuppressWarnings({"rawtypes", "unchecked"})
 	public XFieldBase<?> build() {
 		return new XFieldBase(className, null, className, 0, sourceXClass);
 	}
@@ -99,8 +101,9 @@ public class ClassGenerator<T> {
 	}
 
 	public static class MethodReference {
-		private Class<?> clazz;
-		private String name;
+
+		private final Class<?> clazz;
+		private final String name;
 
 		public MethodReference(Class<?> clazz, String name) {
 			this.clazz = clazz;
@@ -203,4 +206,7 @@ public class ClassGenerator<T> {
 		return interfaces;
 	}
 
+	public void package_(String pkg) {
+		this.packageName = pkg;
+	}
 }

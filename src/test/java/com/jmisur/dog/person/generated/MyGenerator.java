@@ -94,9 +94,12 @@ public class MyGenerator extends AbstractGenerator {
 		XCar car = XCar.car;
 		generate("com.jmisur.dog.car.generated.Car01").from(car);
 
+		// package param
+		generate("Car01").from(car).package_("com.jmisur.dog.car.generated");
+
 		// global package
-		setPackage("com.jmisur.dog.car.generated");
-		generate("Car02").from(car);
+		package_("com.jmisur.dog.car.generated");
+		generate("Car03").from(car);
 
 		// abstract, package, default...
 

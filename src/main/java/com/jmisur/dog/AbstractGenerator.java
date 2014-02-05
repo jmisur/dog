@@ -44,7 +44,7 @@ public abstract class AbstractGenerator {
 		return context.getGenerators();
 	}
 
-	public void setPackage(String pkg) {
+	public void package_(String pkg) {
 		if (pkg == null) pkg = "";
 		if (!pkg.endsWith(".")) pkg += ".";
 		this.currentPackage = pkg;
