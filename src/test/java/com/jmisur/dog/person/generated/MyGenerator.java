@@ -1,17 +1,18 @@
 package com.jmisur.dog.person.generated;
 
-import static com.jmisur.dog.person.XAddress.address;
-import static com.jmisur.dog.person.XPerson.Person;
-import static com.jmisur.dog.person.XPerson.person;
-
 import java.io.Serializable;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 
 import com.jmisur.dog.AbstractGenerator;
 import com.jmisur.dog.Generator;
+import com.jmisur.dog.car.XCar;
 import com.jmisur.dog.generator.XFieldBase;
 import com.jmisur.dog.person.Person;
+
+import static com.jmisur.dog.person.XAddress.address;
+import static com.jmisur.dog.person.XPerson.Person;
+import static com.jmisur.dog.person.XPerson.person;
 
 @Generator
 public class MyGenerator extends AbstractGenerator {
@@ -25,8 +26,8 @@ public class MyGenerator extends AbstractGenerator {
 	// equalsAndHashCode
 	// comparable
 	// JSR303
-	// field getter/setter options, nogetter
 	// type -> id
+	// field getter/setter options, nogetter
 	// multiple source classes
 	// package
 	// validate inputs / strings, classnames, method names, package name, field names
@@ -88,6 +89,15 @@ public class MyGenerator extends AbstractGenerator {
 
 		// interface
 		generate("PersonData51").from(person).interfaces(Serializable.class, Cloneable.class);
+
+		// package in class name
+		XCar car = XCar.car;
+		generate("com.jmisur.dog.car.generated.Car01").from(car);
+
+		// global package
+		setPackage("com.jmisur.dog.car.generated");
+		generate("Car02").from(car);
+
 		// abstract, package, default...
 
 		// copy method with domain class exchange to dto class
@@ -110,5 +120,4 @@ public class MyGenerator extends AbstractGenerator {
 		// c.generate("PersonData").from(person).hashCode(person.firstName, person.address);
 		// c.generate("PersonData").from(person).equalsAndHashCode(person.firstName, person.address);
 	}
-
 }

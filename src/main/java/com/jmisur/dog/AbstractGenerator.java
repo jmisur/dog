@@ -10,6 +10,7 @@ import com.jmisur.dog.generator.GeneratorHelper;
 import com.jmisur.dog.generator.XFieldBase;
 
 public abstract class AbstractGenerator {
+
 	protected static final String String = null;
 	protected static final Integer Integer = null;
 	protected static final int Int = 0;
@@ -17,9 +18,11 @@ public abstract class AbstractGenerator {
 	protected static final Object Object = null;
 	protected static final BigDecimal BigDecimal = null;
 
-	private GeneratorContext context = new GeneratorContext();
+	private final GeneratorContext context = new GeneratorContext();
+	private String currentPackage = "";
 
 	public GeneratorHelper generate(String str) {
+		if (!str.contains(".")) str = currentPackage + str;
 		return context.generate(str);
 	}
 
@@ -40,4 +43,11 @@ public abstract class AbstractGenerator {
 	public List<ClassGenerator<?>> getGenerators() {
 		return context.getGenerators();
 	}
+
+	public void setPackage(String pkg) {
+		if (pkg == null) pkg = "";
+		if (!pkg.endsWith(".")) pkg += ".";
+		this.currentPackage = pkg;
+	}
+
 }

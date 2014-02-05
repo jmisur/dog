@@ -1,8 +1,5 @@
 package com.jmisur.dog.generator;
 
-import static com.google.common.collect.Lists.newArrayList;
-import static com.google.common.collect.Maps.newHashMap;
-import static com.google.common.collect.Maps.newLinkedHashMap;
 import japa.parser.ParseException;
 import japa.parser.ast.CompilationUnit;
 import japa.parser.ast.body.BodyDeclaration;
@@ -18,6 +15,8 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.google.common.base.Joiner;
+
 import org.jannocessor.collection.api.PowerList;
 import org.jannocessor.extra.processor.AbstractGenerator;
 import org.jannocessor.model.bean.NameBean;
@@ -32,11 +31,13 @@ import org.jannocessor.model.variable.JavaField;
 import org.jannocessor.model.variable.JavaParameter;
 import org.jannocessor.processor.api.ProcessingContext;
 
-import com.google.common.base.Joiner;
+import static com.google.common.collect.Lists.newArrayList;
+import static com.google.common.collect.Maps.newHashMap;
+import static com.google.common.collect.Maps.newLinkedHashMap;
 
 public class DtoProcessor extends AbstractGenerator<JavaClass> {
 
-	private Map<String, List<MethodDeclaration>> methodCache = newHashMap();
+	private final Map<String, List<MethodDeclaration>> methodCache = newHashMap();
 
 	public DtoProcessor(String destPackage, boolean inDebugMode) {
 		super(destPackage, inDebugMode);
@@ -257,15 +258,19 @@ public class DtoProcessor extends AbstractGenerator<JavaClass> {
 	}
 
 	private JavaClass createClass(JavaClass generator, ClassGenerator<?> classGenerator) {
-		JavaClass dto = New.classs(classGenerator.getClassName());
-		((JavaClassBean) dto).setParent(generator.getParent());
-		((JavaClassBean) dto).setType(New.type(classGenerator.getClassName()));
+		JavaClassBean dto = (JavaClassBean) New.classs(classGenerator.getClassName());
+		if (classGenerator.getPackageName() != null) {
+			dto.setParent(New.packagee(classGenerator.getPackageName()));
+		} else {
+			dto.setParent(generator.getParent());
+		}
+		dto.setType(New.type(classGenerator.getClassName()));
 		if (classGenerator.getSuperclass() != null) {
-			((JavaClassBean) dto).setSuperclass(New.type(classGenerator.getSuperclass()));
+			dto.setSuperclass(New.type(classGenerator.getSuperclass()));
 		}
 		List<Class<?>> interfaces = classGenerator.getInterfaces();
 		if (interfaces != null) {
-			((JavaClassBean) dto).setInterfaces(New.types(interfaces.toArray(new Class<?>[interfaces.size()])));
+			dto.setInterfaces(New.types(interfaces.toArray(new Class<?>[interfaces.size()])));
 		}
 		return dto;
 	}

@@ -4,7 +4,7 @@ public class GeneratorHelper {
 
 	private final String className;
 	private String packageName;
-	private GeneratorContext generatorContext;
+	private final GeneratorContext generatorContext;
 
 	public GeneratorHelper(GeneratorContext generatorContext, String className) {
 		this.generatorContext = generatorContext;
@@ -15,7 +15,7 @@ public class GeneratorHelper {
 		if (dot == -1) {
 			this.className = className;
 		} else {
-			this.className = className.substring(dot, className.length() - 1);
+			this.className = className.substring(dot + 1, className.length());
 			this.packageName = className.substring(0, dot);
 		}
 
