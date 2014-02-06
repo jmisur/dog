@@ -5,6 +5,6 @@ import com.jmisur.dog.Dto;
 @Dto
 public class Car {
 
-	private String brand;
+	private String model;
 
 }

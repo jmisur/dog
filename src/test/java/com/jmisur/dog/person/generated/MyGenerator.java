@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import com.jmisur.dog.AbstractGenerator;
 import com.jmisur.dog.Generator;
 import com.jmisur.dog.car.XCar;
+import com.jmisur.dog.car.XPlane;
 import com.jmisur.dog.generator.XFieldBase;
 import com.jmisur.dog.person.Person;
 
@@ -30,12 +31,10 @@ public class MyGenerator extends AbstractGenerator {
 	// type -> id
 	// field getter/setter options, nogetter
 	// multiple source classes
-	// package
 	// validate inputs / strings, classnames, method names, package name, field names
-	// superclass / hierarchy
 	// interface - serializable().supressWarnings()/defaultSerial()/generatedSerial()
 	// add annotations, serializable etc
-	// convert subobjects to X by default
+	// convert subobjects to X by default (register(Address.class, addrDto);)
 	// embed object asEmbedded().field(...).method(..)
 	// custom types/dtos in method params/return types - change via builder
 	// all builder methods on field/method return new instance, otherwise it alters Xclass default fields
@@ -106,13 +105,12 @@ public class MyGenerator extends AbstractGenerator {
 		generate("Car10").from(car).abstract_();
 		generate("Car11").from(car).default_().final_();
 
+		XPlane plane = XPlane.plane;
+		generate("Flyingcar").from(car, plane);
+
 		// copy method with domain class exchange to dto class
 		// generate("PersonData43").from(person).method(person.getSomeStuff(QPerson, BigDecimal));
 
-		// // package
-		// c.generate("PersonData").from(person);
-		//
-		//
 		// // id
 		// c.generate("PersonData").from(person).field(person.address.asId().noSetter());
 		//

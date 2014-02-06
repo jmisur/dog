@@ -11,7 +11,7 @@ public class ClassGenerator<T> {
 
 	private final String className;
 	private String packageName;
-	private final XField<T> sourceXClass;
+	private final List<XClass<T>> sourceXClasses;
 	private final List<XFieldBase<?>> fields = new ArrayList<XFieldBase<?>>();
 	private final List<XField<?>> excludedFields = new ArrayList<XField<?>>();
 	private final List<MethodReference> methods = new ArrayList<MethodReference>();
@@ -25,10 +25,10 @@ public class ClassGenerator<T> {
 	private boolean default_;
 	private boolean final_;
 
-	public ClassGenerator(String className, String packageName, XField<T> sourceXClass) {
+	public ClassGenerator(String className, String packageName, List<XClass<T>> sourceXClasses) {
 		this.className = className;
 		this.packageName = packageName;
-		this.sourceXClass = sourceXClass;
+		this.sourceXClasses = sourceXClasses;
 	}
 
 	public ClassGenerator<T> method(Class<?> clazz, String name) {
@@ -42,8 +42,8 @@ public class ClassGenerator<T> {
 	}
 
 	@SuppressWarnings({"rawtypes", "unchecked"})
-	public XFieldBase<?> build() {
-		return new XFieldBase(className, null, className, 0, sourceXClass);
+	public XClass<?> build() {
+		return new XClass();
 	}
 
 	public ClassGenerator<T> field(XFieldBase<?> field) {
@@ -62,18 +62,11 @@ public class ClassGenerator<T> {
 
 	private void checkSource(XFieldBase<?> field) {
 		if (field.getSource() != null) {
-			verifySource(field.getSource());
+			if (sourceXClasses.contains(field.getSource())) {
+				return;
+			}
+			throw new ClassDefinitionException("You specified field which is not a derived field from " + sourceXClasses);
 		}
-	}
-
-	private void verifySource(XField<?> source) {
-		if (source == null) {
-			throw new ClassDefinitionException("You specified field which is not a derived field from " + sourceXClass);
-		}
-		if (source == sourceXClass) {
-			return;
-		}
-		verifySource(source.getSource());
 	}
 
 	public ClassGenerator<T> intField(String name) {
@@ -153,8 +146,8 @@ public class ClassGenerator<T> {
 		return packageName;
 	}
 
-	public XField<T> getSourceXClass() {
-		return sourceXClass;
+	public List<XClass<T>> getSourceXClasses() {
+		return sourceXClasses;
 	}
 
 	public List<XFieldBase<?>> getFields() {

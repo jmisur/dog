@@ -17,7 +17,7 @@ public class XCar extends XField<Car> {
 
     private static XParam xparam;
 
-    public final XField<String> brand = new XField<String>("brand", String.class, this);
+    public final XField<String> model = new XField<String>("model", String.class, this);
 
     public XCar() {
         this("XCar", null);
@@ -28,7 +28,7 @@ public class XCar extends XField<Car> {
     }
 
     public XField<?>[] getFields() {
-        return new XField<?>[] {brand};
+        return new XField<?>[] {model};
     }
 
 }
