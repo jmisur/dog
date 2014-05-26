@@ -2,17 +2,16 @@ package com.jmisur.dog.generator;
 
 import com.google.common.collect.ImmutableMap;
 
-import org.apache.commons.lang.builder.ToStringBuilder;
 import org.jannocessor.model.type.JavaType;
 import org.jannocessor.model.util.New;
 
-public class XFieldBase<T> {
+public class XFieldBase {
 
 	private final String name;
-	private final Class<T> type;
+	private final Class<?> type;
 	private final String typeName;
 	private final int modifier;
-	private final XClass<?> source;
+	private final XFieldBase source;
 	private final ImmutableMap<XOption<?>, Object> options;
 
 	// TODO booleanoption
@@ -21,15 +20,15 @@ public class XFieldBase<T> {
 	private static final XOption<Boolean> copySetter = new XOption<Boolean>("copySetter", false);
 	private static final XOption<Boolean> copyGetter = new XOption<Boolean>("copyGetter", false);
 
-	public XFieldBase(String name, Class<T> type, int modifier, XClass<?> source) {
+	public XFieldBase(String name, Class<?> type, int modifier, XFieldBase source) {
 		this(name, type, type.getSimpleName(), modifier, source);
 	}
 
-	public XFieldBase(String name, Class<T> type, String typeName, int modifier, XClass<?> source) {
-		this(name, type, typeName, modifier, source, ImmutableMap.<XOption<?>, Object>of());
+	public XFieldBase(String name, Class<?> type, String typeName, int modifier, XFieldBase source) {
+		this(name, type, typeName, modifier, source, ImmutableMap.<XOption<?>, Object> of());
 	}
 
-	private XFieldBase(String name, Class<T> type, String typeName, int modifier, XClass<?> source, ImmutableMap<XOption<?>, Object> options) {
+	private XFieldBase(String name, Class<?> type, String typeName, int modifier, XFieldBase source, ImmutableMap<XOption<?>, Object> options) {
 		this.name = name;
 		this.type = type;
 		this.typeName = typeName;
@@ -38,15 +37,15 @@ public class XFieldBase<T> {
 		this.options = options;
 	}
 
-	public XFieldBase<T> noSetter() {
+	public XFieldBase noSetter() {
 		return clone(setter, false);
 	}
 
-	private <X> XFieldBase<T> clone(XOption<X> key, X value) {
-		return new XFieldBase<T>(name, type, typeName, modifier, source, ImmutableMap.<XOption<?>, Object>builder().putAll(options).put(key, value).build());
+	private <X> XFieldBase clone(XOption<X> key, X value) {
+		return new XFieldBase(name, type, typeName, modifier, source, ImmutableMap.<XOption<?>, Object> builder().putAll(options).put(key, value).build());
 	}
 
-	public XFieldBase<T> noGetter() {
+	public XFieldBase noGetter() {
 		return clone(getter, false);
 	}
 
@@ -54,7 +53,7 @@ public class XFieldBase<T> {
 		return name;
 	}
 
-	public Class<T> getTypeAsClass() {
+	public Class<?> getTypeAsClass() {
 		return type;
 	}
 
@@ -66,7 +65,7 @@ public class XFieldBase<T> {
 		return modifier;
 	}
 
-	public XClass<?> getSource() {
+	public XFieldBase getSource() {
 		return source;
 	}
 
@@ -84,15 +83,15 @@ public class XFieldBase<T> {
 		return get(getter);
 	}
 
-	public XField<?>[] getFields() {
-		return new XField<?>[0];
-	};
+	public XField[] getFields() {
+		return new XField[0];
+	}
 
-	public XFieldBase<T> copyGetter() {
+	public XFieldBase copyGetter() {
 		return clone(getter, false).clone(copyGetter, true);
 	}
 
-	public XFieldBase<T> copySetter() {
+	public XFieldBase copySetter() {
 		return clone(setter, false).clone(copySetter, true);
 	}
 
@@ -106,7 +105,14 @@ public class XFieldBase<T> {
 
 	@Override
 	public String toString() {
-		return new ToStringBuilder(this).append("name", name).append("type", type).append("typeName", typeName).append("modifier", modifier).append("source",
-				source).append("options", options).toString();
+		return typeName + " " + name;
+	}
+
+	public XClass getSourceXClass() {
+		XFieldBase result = source;
+		while (result != null && !(source instanceof XClass)) {
+			result = source.getSource();
+		}
+		return (XClass) result;
 	}
 }

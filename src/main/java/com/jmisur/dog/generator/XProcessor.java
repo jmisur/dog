@@ -1,10 +1,11 @@
 package com.jmisur.dog.generator;
 
+import static com.google.common.collect.Lists.newArrayList;
+import static com.google.common.collect.Sets.newHashSet;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
-
-import com.jmisur.dog.Dto;
 
 import org.jannocessor.collection.api.PowerList;
 import org.jannocessor.extra.processor.AbstractGenerator;
@@ -22,8 +23,7 @@ import org.jannocessor.model.variable.JavaField;
 import org.jannocessor.model.variable.JavaParameter;
 import org.jannocessor.processor.api.ProcessingContext;
 
-import static com.google.common.collect.Lists.newArrayList;
-import static com.google.common.collect.Sets.newHashSet;
+import com.jmisur.dog.Dto;
 
 public class XProcessor extends AbstractGenerator<JavaClass> {
 
@@ -70,7 +70,7 @@ public class XProcessor extends AbstractGenerator<JavaClass> {
 				params.deleteCharAt(params.length() - 1);
 
 				JavaMethod methodRef = New.method(Methods.PUBLIC, XMethod.class, methodName, signatureParams);
-				methodRef.getBody().setHardcoded("return new %s(\"%s\", %s.class%s);", XMethod.class.getSimpleName(), methodName,
+				methodRef.getBody().setHardcoded("return new %s(this, \"%s\", %s.class%s);", XMethod.class.getSimpleName(), methodName,
 						method.getReturnType().getSimpleName(), params.toString());
 				xclass.getMethods().add(methodRef);
 			}
@@ -88,8 +88,8 @@ public class XProcessor extends AbstractGenerator<JavaClass> {
 	}
 
 	private void createGetFields(JavaClass xclass, List<JavaField> fields) {
-		JavaMethod getFields = New.method(Methods.PUBLIC, xfieldAnyTypeArray(), "getFields");
-		getFields.getBody().setHardcoded("return new %s {%s};", xfieldAnyTypeArray().getSimpleName(), getFieldNames(fields));
+		JavaMethod getFields = New.method(Methods.PUBLIC, xfieldArray(), "getFields");
+		getFields.getBody().setHardcoded("return new %s {%s};", xfieldArray().getSimpleName(), getFieldNames(fields));
 		xclass.getMethods().add(getFields);
 	}
 
@@ -125,7 +125,7 @@ public class XProcessor extends AbstractGenerator<JavaClass> {
 
 	private JavaField createXField(String fieldName, JavaType fieldType, String fieldTypeName) {
 		JavaField field;
-		JavaType xfieldType = xfieldType(fieldType);
+		JavaType xfieldType = xfield();
 		field = New.field(Fields.PUBLIC_FINAL, xfieldType, fieldName);
 		field.getValue().setHardcoded("new %s(\"%s\", %s.class, this)", xfieldType.getSimpleName(), fieldName, fieldTypeName);
 		return field;
@@ -156,7 +156,7 @@ public class XProcessor extends AbstractGenerator<JavaClass> {
 	}
 
 	private void createConstructor(JavaClass model, JavaClass xclass) {
-		JavaConstructor constructor = New.constructor(New.parameter(String.class, "name"), New.parameter(xfieldAnyType(), "source"));
+		JavaConstructor constructor = New.constructor(New.parameter(String.class, "name"), New.parameter(xclass(), "source"));
 		constructor.getBody().setHardcoded("super(name, %s.class, source);", model.getName());
 		xclass.getConstructors().add(constructor);
 	}
@@ -170,49 +170,55 @@ public class XProcessor extends AbstractGenerator<JavaClass> {
 
 	private JavaClass createClass(JavaClass model, String name) {
 		// class signature and superclass
-		JavaClass xclass = New.classs(Classes.PUBLIC, name, xfieldType(model.getType()));
+		JavaClass xclass = New.classs(Classes.PUBLIC, name, xclass());
 		((JavaClassBean) xclass).setParent(model.getParent());
 		((JavaClassBean) xclass).setType(New.type(name));
 		return xclass;
 	}
 
 	private boolean isDto(JavaType fieldType) {
-		if (fieldType.getKind() != JavaTypeKind.DECLARED) return false;
+		if (fieldType.getKind() != JavaTypeKind.DECLARED) {
+			return false;
+		}
 		return fieldType.getTypeClass().isAnnotationPresent(Dto.class);
 	}
 
-	private static JavaType xfieldType(JavaType fieldType) {
-		return type(XField.class, fieldType);
+	// private static JavaType xfieldType(JavaType fieldType) {
+	// return type(XField.class, fieldType);
+	// }
+
+	private static JavaType xfield() {
+		return New.type(XField.class);
 	}
 
-	private static JavaType xfieldAnyType() {
-		return type(XField.class, "?");
+	private static JavaType xclass() {
+		return New.type(XClass.class);
 	}
 
-	private static JavaType xfieldAnyTypeArray() {
-		return typeArray(XField.class, "?");
+	private static JavaType xfieldArray() {
+		return New.type("%s[]", XField.class.getCanonicalName());
 	}
 
-	private static JavaType type(Class<?> clazz, JavaType fieldType) {
-		String name = null;
-		switch (fieldType.getKind()) {
-		case DECLARED:
-			name = fieldType.getSimpleName().getText();
-			break;
-		case INT:
-			name = Integer.class.getSimpleName();
-			break;
-		// TODO others
-		}
-		return type(clazz, name);
-	}
-
-	private static JavaType type(Class<?> clazz, String param) {
-		return New.type("%s<%s>", clazz.getCanonicalName(), param);
-	}
-
-	private static JavaType typeArray(Class<?> clazz, String param) {
-		return New.type("%s<%s>[]", clazz.getCanonicalName(), param);
-	}
+	// private static JavaType type(Class<?> clazz, JavaType fieldType) {
+	// String name = null;
+	// switch (fieldType.getKind()) {
+	// case DECLARED:
+	// name = fieldType.getSimpleName().getText();
+	// break;
+	// case INT:
+	// name = Integer.class.getSimpleName();
+	// break;
+	// // TODO others
+	// }
+	// return type(clazz, name);
+	// }
+	//
+	// private static JavaType type(Class<?> clazz, String param) {
+	// return New.type("%s<%s>", clazz.getCanonicalName(), param);
+	// }
+	//
+	// private static JavaType typeArray(Class<?> clazz, String param) {
+	// return New.type("%s<%s>[]", clazz.getCanonicalName(), param);
+	// }
 
 }

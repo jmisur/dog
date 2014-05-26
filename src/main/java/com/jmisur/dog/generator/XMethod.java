@@ -8,8 +8,10 @@ public class XMethod {
 	private final String name;
 	private final Class<?> returnType;
 	private final XParam[] params;
+	private final XClass source;
 
-	public XMethod(String name, Class<?> returnType, XParam... params) {
+	public XMethod(XClass source, String name, Class<?> returnType, XParam... params) {
+		this.source = source;
 		this.name = name;
 		this.returnType = returnType;
 		this.params = params;
@@ -39,5 +41,9 @@ public class XMethod {
 		}
 		builder.append(")");
 		return builder.toString();
+	}
+
+	public XClass getSource() {
+		return source;
 	}
 }

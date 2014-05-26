@@ -1,6 +1,6 @@
 package com.jmisur.dog.person.generated;
 
-import com.jmisur.dog.person.Person;
+import com.jmisur.dog.person.Address;
 import javax.annotation.Generated;
 
 /**
@@ -13,7 +13,7 @@ public class PersonData32 {
 
     private String lastName;
 
-    protected Person addr;
+    protected Address addr;
 
     public String getFirstName() {
         return firstName;
@@ -31,11 +31,11 @@ public class PersonData32 {
         this.lastName = lastName;
     }
 
-    public Person getAddr() {
+    public Address getAddr() {
         return addr;
     }
 
-    public void setAddr(Person addr) {
+    public void setAddr(Address addr) {
         this.addr = addr;
     }
 

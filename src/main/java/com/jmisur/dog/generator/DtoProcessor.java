@@ -1,5 +1,8 @@
 package com.jmisur.dog.generator;
 
+import static com.google.common.collect.Lists.newArrayList;
+import static com.google.common.collect.Maps.newHashMap;
+import static com.google.common.collect.Maps.newLinkedHashMap;
 import japa.parser.ParseException;
 import japa.parser.ast.CompilationUnit;
 import japa.parser.ast.body.BodyDeclaration;
@@ -33,10 +36,6 @@ import org.jannocessor.model.variable.JavaField;
 import org.jannocessor.model.variable.JavaParameter;
 import org.jannocessor.processor.api.ProcessingContext;
 
-import static com.google.common.collect.Lists.newArrayList;
-import static com.google.common.collect.Maps.newHashMap;
-import static com.google.common.collect.Maps.newLinkedHashMap;
-
 public class DtoProcessor extends AbstractGenerator<JavaClass> {
 
 	private final Map<String, List<MethodDeclaration>> methodCache = newHashMap();
@@ -67,32 +66,31 @@ public class DtoProcessor extends AbstractGenerator<JavaClass> {
 	}
 
 	private void processClassGenerators(ProcessingContext context, JavaClass generator, com.jmisur.dog.AbstractGenerator instance) {
-		for (ClassGenerator<?> classGenerator : instance.getGenerators()) {
+		for (ClassGenerator classGenerator : instance.getGenerators()) {
 			JavaClass dto = createClass(generator, classGenerator);
-			Collection<XFieldBase<?>> fields = createFields(classGenerator, dto);
+			Collection<XFieldBase> fields = createFields(classGenerator, dto);
 			createGettersSetters(dto, fields, context, classGenerator);
 			createCopyMethods(context, classGenerator, dto, fields);
 			generate(dto);
 		}
 	}
 
-	private void createCopyMethods(ProcessingContext context, ClassGenerator<?> classGenerator, JavaClass dto, Collection<XFieldBase<?>> fields) {
+	private void createCopyMethods(ProcessingContext context, ClassGenerator classGenerator, JavaClass dto, Collection<XFieldBase> fields) {
 		List<XMethod> copyMethods = classGenerator.getCopyMethods();
 
 		if (!copyMethods.isEmpty()) {
-			List<MethodDeclaration> methodList = createMethodCache(context, classGenerator.getSourceXClass().getTypeAsClass());
-			if (methodList == null) {
+			Map<XClass, List<MethodDeclaration>> methodMap = createMethodCache(context, classGenerator.getSourceXClasses());
+			if (methodMap == null) {
 				return;
 			}
 			for (XMethod method : copyMethods) {
-				copyMethod(dto, methodList, method, context);
+				copyMethod(dto, methodMap.get(method.getSource()), method, context);
 			}
 		}
 	}
 
 	private void copyMethod(JavaClass dto, List<MethodDeclaration> methodList, XMethod method, ProcessingContext context) {
 		for (MethodDeclaration methodMember : methodList) {
-			System.out.println("COMPARING: " + methodMember.getName() + " to " + method.getName());
 			if (methodMember.getName().equals(method.getName()) && paramsEquals(methodMember, method)) {
 				copyMethod(dto, methodMember, method);
 				return;
@@ -101,25 +99,39 @@ public class DtoProcessor extends AbstractGenerator<JavaClass> {
 		context.getLogger().error("Unable to find method {} in source java file", method);
 	}
 
-	private List<MethodDeclaration> createMethodCache(ProcessingContext context, Class<?> clazz) {
-		String cacheKey = clazz.getCanonicalName();
+	private Map<XClass, List<MethodDeclaration>> createMethodCache(ProcessingContext context, List<XClass> sources) {
+		Map<XClass, List<MethodDeclaration>> map = newHashMap();
 
-		if (methodCache.get(cacheKey) == null) {
-			CompilationUnit compilationUnit = parseClass(clazz, context);
-			if (compilationUnit == null) {
-				return null;
+		for (XClass xclass : sources) {
+			String cacheKey = xclass.getTypeAsClass().getCanonicalName();
+
+			List<MethodDeclaration> cache = methodCache.get(cacheKey);
+
+			if (cache == null) {
+				cache = createMethodCache(context, xclass, cacheKey);
 			}
 
+			map.put(xclass, cache);
+		}
+
+		return map;
+	}
+
+	private List<MethodDeclaration> createMethodCache(ProcessingContext context, XClass xclass, String cacheKey) {
+		List<MethodDeclaration> cache = newArrayList();
+		CompilationUnit compilationUnit = parseClass(xclass.getTypeAsClass(), context);
+
+		if (compilationUnit != null) {
 			for (TypeDeclaration type : compilationUnit.getTypes()) {
-				if (type.getName().equals(clazz.getSimpleName())) {
-					methodCache.put(cacheKey, newArrayList(getMethods(type.getMembers())));
-					return methodCache.get(cacheKey);
+				if (type.getName().equals(xclass.getTypeAsClass().getSimpleName())) {
+					cache = newArrayList(getMethods(type.getMembers()));
 				}
 			}
-			return null;
-		} else {
-			return methodCache.get(cacheKey);
 		}
+
+		methodCache.put(cacheKey, cache);
+
+		return cache;
 	}
 
 	private List<MethodDeclaration> getMethods(List<BodyDeclaration> members) {
@@ -204,11 +216,12 @@ public class DtoProcessor extends AbstractGenerator<JavaClass> {
 		return result;
 	}
 
-	private void createGettersSetters(JavaClass dto, Collection<XFieldBase<?>> fields, ProcessingContext context, ClassGenerator<?> classGenerator) {
-		for (XFieldBase<?> field : fields) {
+	private void createGettersSetters(JavaClass dto, Collection<XFieldBase> fields, ProcessingContext context, ClassGenerator classGenerator) {
+		for (XFieldBase field : fields) {
 			if (field.isCopyGetter()) {
-				List<MethodDeclaration> methodList = createMethodCache(context, classGenerator.getSourceXClass().getTypeAsClass());
-				copyMethod(dto, methodList, new XMethod(getterMethodName(field), field.getTypeAsClass()), context);
+				Map<XClass, List<MethodDeclaration>> methodMap = createMethodCache(context, classGenerator.getSourceXClasses());
+				copyMethod(dto, methodMap.get(field.getSource()), new XMethod(field.getSourceXClass(), getterMethodName(field), field.getTypeAsClass()),
+						context);
 			}
 			if (field.isGetter()) {
 				JavaMethod getter = New.method(Methods.PUBLIC, field.getType(), getterMethodName(field));
@@ -216,8 +229,9 @@ public class DtoProcessor extends AbstractGenerator<JavaClass> {
 				dto.getMethods().add(getter);
 			}
 			if (field.isCopySetter()) {
-				List<MethodDeclaration> methodList = createMethodCache(context, classGenerator.getSourceXClass().getTypeAsClass());
-				copyMethod(dto, methodList, new XMethod(setterMethodName(field), void.class, new XParam(field.getTypeAsClass(), field.getName())), context);
+				Map<XClass, List<MethodDeclaration>> methodMap = createMethodCache(context, classGenerator.getSourceXClasses());
+				copyMethod(dto, methodMap.get(field.getSource()),
+						new XMethod(field.getSourceXClass(), setterMethodName(field), void.class, new XParam(field.getTypeAsClass(), field.getName())), context);
 			}
 			if (field.isSetter()) {
 				JavaMethod setter = New.method(Methods.PUBLIC, void.class, setterMethodName(field), New.parameter(field.getType(), field.getName()));
@@ -227,17 +241,17 @@ public class DtoProcessor extends AbstractGenerator<JavaClass> {
 		}
 	}
 
-	private String setterMethodName(XFieldBase<?> field) {
+	private String setterMethodName(XFieldBase field) {
 		return new NameBean(field.getName()).insertPart(0, "set").getText();
 	}
 
-	private String getterMethodName(XFieldBase<?> field) {
+	private String getterMethodName(XFieldBase field) {
 		return new NameBean(field.getName()).insertPart(0, "get").getText();
 	}
 
-	private Collection<XFieldBase<?>> createFields(ClassGenerator<?> classGenerator, JavaClass dto) {
-		Collection<XFieldBase<?>> fields = mergeFields(classGenerator);
-		for (XFieldBase<?> field : fields) {
+	private Collection<XFieldBase> createFields(ClassGenerator classGenerator, JavaClass dto) {
+		Collection<XFieldBase> fields = mergeFields(classGenerator);
+		for (XFieldBase field : fields) {
 			JavaField javaField = New.field(getModifier(field.getModifier()), field.getType(), field.getName());
 			dto.getFields().add(javaField);
 		}
@@ -259,7 +273,7 @@ public class DtoProcessor extends AbstractGenerator<JavaClass> {
 		}
 	}
 
-	private JavaClass createClass(JavaClass generator, ClassGenerator<?> classGenerator) {
+	private JavaClass createClass(JavaClass generator, ClassGenerator classGenerator) {
 		JavaClassBean dto = (JavaClassBean) New.classs(classGenerator.getClassName());
 
 		// package
@@ -285,33 +299,48 @@ public class DtoProcessor extends AbstractGenerator<JavaClass> {
 
 		// modifiers
 		List<ClassModifierValue> modifiers = new ArrayList<ClassModifierValue>();
-		if (!classGenerator.isDefault()) modifiers.add(ClassModifierValue.PUBLIC);
-		if (classGenerator.isFinal()) modifiers.add(ClassModifierValue.FINAL);
-		if (classGenerator.isAbstract()) modifiers.add(ClassModifierValue.ABSTRACT);
+		if (!classGenerator.isDefault()) {
+			modifiers.add(ClassModifierValue.PUBLIC);
+		}
+		if (classGenerator.isFinal()) {
+			modifiers.add(ClassModifierValue.FINAL);
+		}
+		if (classGenerator.isAbstract()) {
+			modifiers.add(ClassModifierValue.ABSTRACT);
+		}
 		dto.setModifiers(New.classModifiers(modifiers.toArray(new ClassModifierValue[modifiers.size()])));
 		return dto;
 	}
 
-	private Collection<XFieldBase<?>> mergeFields(ClassGenerator<?> classGenerator) {
-		LinkedHashMap<String, XFieldBase<?>> fields = newLinkedHashMap();
+	private Collection<XFieldBase> mergeFields(ClassGenerator classGenerator) {
+		LinkedHashMap<String, XFieldBase> fields = newLinkedHashMap();
 		if (!classGenerator.isExcludeAll()) {
-			for (XFieldBase<?> field : classGenerator.getSourceXClass().getFields()) {
-				fields.put(field.getName(), field);
+			for (XClass xclass : classGenerator.getSourceXClasses()) {
+				for (XFieldBase field : xclass.getFields()) {
+					System.out.println("adding " + field.getName());
+					fields.put(field.getName(), field);
+				}
 			}
 		}
-		for (XFieldBase<?> field : classGenerator.getExcludedFields()) {
+
+		for (XField field : classGenerator.getExcludedFields()) {
 			fields.remove(field.getName());
 		}
-		for (XFieldBase<?> field : classGenerator.getFields()) {
-			if (field.getSource() == null || field.getSource() == classGenerator.getSourceXClass()) {
+
+		for (XFieldBase field : classGenerator.getFields()) {
+			if (field.getSource() == null || classGenerator.getSourceXClasses().contains(field.getSource())) {
 				// is existing or custom without source
+				System.out.println("adding " + field.getName());
 				fields.put(field.getName(), field);
 			} else {
+				System.out.println("adding custom " + field.getName() + " based on " + field.getSource().getName());
 				// custom field based on existing, overwrite under original name
 				fields.put(field.getSource().getName(), field);
 			}
 		}
 		// System.out.println("FIELDS: " + fields.keySet());
+		// check for duplicate entries in multimap
+		// throw new IllegalArgumentException("Duplicate field '" + field.getName() + "'. You must include all fields explicitely");
 		return fields.values();
 	}
 }

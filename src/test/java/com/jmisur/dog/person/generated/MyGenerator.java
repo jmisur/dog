@@ -1,5 +1,9 @@
 package com.jmisur.dog.person.generated;
 
+import static com.jmisur.dog.person.XAddress.address;
+import static com.jmisur.dog.person.XPerson.Person;
+import static com.jmisur.dog.person.XPerson.person;
+
 import java.io.Serializable;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
@@ -8,12 +12,9 @@ import com.jmisur.dog.AbstractGenerator;
 import com.jmisur.dog.Generator;
 import com.jmisur.dog.car.XCar;
 import com.jmisur.dog.car.XPlane;
-import com.jmisur.dog.generator.XFieldBase;
-import com.jmisur.dog.person.Person;
-
-import static com.jmisur.dog.person.XAddress.address;
-import static com.jmisur.dog.person.XPerson.Person;
-import static com.jmisur.dog.person.XPerson.person;
+import com.jmisur.dog.generator.ClassDefinitionException;
+import com.jmisur.dog.generator.XClass;
+import com.jmisur.dog.person.Address;
 
 @Generator
 public class MyGenerator extends AbstractGenerator {
@@ -40,7 +41,8 @@ public class MyGenerator extends AbstractGenerator {
 	// all builder methods on field/method return new instance, otherwise it alters Xclass default fields
 	// enhancing with plugins via Xprocessor/DtoProcessor/XFieldBase subtype
 	// XField.build() return something else
-
+	// tests for bad fields (not derived from source classes)
+	// tests for custom as(XClass which is not custom)
 	@Override
 	public void generate() {
 		// default config -- generate all
@@ -54,7 +56,7 @@ public class MyGenerator extends AbstractGenerator {
 		generate("PersonData13").from(person).excludeAll().fields(person.firstName, person.lastName);
 
 		// nested field
-		generate("PersonData14").from(person).field(person.address.name); // TODO exclude address here?
+		generate("PersonData14").from(person).field(person.address.name);
 		generate("PersonData15").from(person).field(person.address.name.as("addressName"));
 
 		// custom fields & options
@@ -72,8 +74,9 @@ public class MyGenerator extends AbstractGenerator {
 		// overwrite field
 		generate("PersonData30").from(person).field(person.firstName.as("name"));
 		generate("PersonData31").from(person).field(person.address.as("addr", Modifier.PROTECTED));
-		generate("PersonData32").from(person).field(person.address.as("addr", Person.class, Modifier.PROTECTED));
-		XFieldBase<?> customAddressDto = generate("AddressData30").from(address).build();
+		generate("PersonData32").from(person).field(person.address.as("addr", Address.class, Modifier.PROTECTED));
+
+		XClass customAddressDto = generate("AddressData30").from(address).build();
 		generate("PersonData33").from(person).field(person.address.as("addr", customAddressDto, Modifier.PROTECTED));
 
 		// copy method
@@ -84,7 +87,7 @@ public class MyGenerator extends AbstractGenerator {
 		generate("PersonData42").from(person).method(person.setSomeInt(String, Int)).method(person.getSomeStuff(Person, BigDecimal));
 
 		// superclass
-		XFieldBase<?> superc = generate("PersonData50Super").from(person).exclude(person.address).superclass(ArrayList.class).build();
+		XClass superc = generate("PersonData50Super").from(person).exclude(person.address).superclass(ArrayList.class).build();
 		generate("PersonData50").from(person).excludeAll().field(person.address).superclass(superc);
 
 		// interface
@@ -95,7 +98,7 @@ public class MyGenerator extends AbstractGenerator {
 		generate("com.jmisur.dog.car.generated.Car01").from(car);
 
 		// package param
-		generate("Car01").from(car).package_("com.jmisur.dog.car.generated");
+		generate("Car02").from(car).package_("com.jmisur.dog.car.generated");
 
 		// global package
 		package_("com.jmisur.dog.car.generated");
@@ -106,7 +109,15 @@ public class MyGenerator extends AbstractGenerator {
 		generate("Car11").from(car).default_().final_();
 
 		XPlane plane = XPlane.plane;
-		generate("Flyingcar").from(car, plane);
+		generate("Flyingcar1").from(car, plane);
+
+		generate("Flyingcar2").from(car, plane).excludeAll().fields(car.model.as("m"), plane.engines.as("e"));
+
+		try {
+			generate("Flyingcar3").from(car, plane).excludeAll().fields(car.model, person.address);
+		} catch (ClassDefinitionException e) {
+			// ok
+		}
 
 		// copy method with domain class exchange to dto class
 		// generate("PersonData43").from(person).method(person.getSomeStuff(QPerson, BigDecimal));

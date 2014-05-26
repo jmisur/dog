@@ -22,31 +22,37 @@ public abstract class AbstractGenerator {
 	private String currentPackage = "";
 
 	public GeneratorHelper generate(String str) {
-		if (!str.contains(".")) str = currentPackage + str;
+		if (!str.contains(".")) {
+			str = currentPackage + str;
+		}
 		return context.generate(str);
 	}
 
 	public abstract void generate();
 
-	public <X> XFieldBase<X> field(String name, Class<X> clazz) {
-		return new XFieldBase<X>(name, clazz, Modifier.PRIVATE, null);
+	public XFieldBase field(String name, Class<?> clazz) {
+		return new XFieldBase(name, clazz, Modifier.PRIVATE, null);
 	}
 
-	public <X> XFieldBase<X> field(String name, Class<X> clazz, int modifier) {
-		return new XFieldBase<X>(name, clazz, modifier, null);
+	public XFieldBase field(String name, Class<?> clazz, int modifier) {
+		return new XFieldBase(name, clazz, modifier, null);
 	}
 
-	public XFieldBase<String> stringField(String name) {
-		return new XFieldBase<String>(name, String.class, Modifier.PRIVATE, null);
+	public XFieldBase stringField(String name) {
+		return new XFieldBase(name, String.class, Modifier.PRIVATE, null);
 	}
 
-	public List<ClassGenerator<?>> getGenerators() {
+	public List<ClassGenerator> getGenerators() {
 		return context.getGenerators();
 	}
 
 	public void package_(String pkg) {
-		if (pkg == null) pkg = "";
-		if (!pkg.endsWith(".")) pkg += ".";
+		if (pkg == null) {
+			pkg = "";
+		}
+		if (!pkg.endsWith(".")) {
+			pkg += ".";
+		}
 		this.currentPackage = pkg;
 	}
 

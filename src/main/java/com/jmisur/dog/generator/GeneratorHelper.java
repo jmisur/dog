@@ -1,6 +1,6 @@
 package com.jmisur.dog.generator;
 
-import java.util.Arrays;
+import static com.google.common.collect.Lists.newArrayList;
 
 public class GeneratorHelper {
 
@@ -32,8 +32,8 @@ public class GeneratorHelper {
 		return this;
 	}
 
-	public <T> ClassGenerator<T> from(XClass<T>... sourceXClasses) {
-		ClassGenerator<T> generator = new ClassGenerator<T>(className, packageName, Arrays.asList(sourceXClasses));
+	public ClassGenerator from(XClass... sourceXClasses) {
+		ClassGenerator generator = new ClassGenerator(className, packageName, newArrayList(sourceXClasses));
 		generatorContext.addClassGenerator(generator);
 		return generator;
 	}

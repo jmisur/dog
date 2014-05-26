@@ -5,8 +5,6 @@ import org.jannocessor.processor.annotation.Annotated;
 import org.jannocessor.processor.annotation.Types;
 
 import com.jmisur.dog.Dto;
-import com.jmisur.dog.Generator;
-import com.jmisur.dog.generator.DtoProcessor;
 import com.jmisur.dog.generator.XProcessor;
 
 public class Processors {
@@ -17,9 +15,9 @@ public class Processors {
 		return new XProcessor("xxx", false);
 	}
 
-	@Annotated(Generator.class)
-	@Types(JavaClass.class)
-	public DtoProcessor dtoProcessor() {
-		return new DtoProcessor("xxx", false);
-	}
+	// @Annotated(Generator.class)
+	// @Types(JavaClass.class)
+	// public DtoProcessor dtoProcessor() {
+	// return new DtoProcessor("xxx", false);
+	// }
 }

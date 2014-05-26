@@ -1,8 +1,8 @@
 package com.jmisur.dog.generator;
 
-public class XClass<T> {
+public class XClass extends XField {
 
-	public XClass(String name, Class<T> class1, XClass<?> source) {
-		// TODO Auto-generated constructor stub
+	public XClass(String name, Class<?> type, XClass source) {
+		super(name, type, source);
 	}
 }
