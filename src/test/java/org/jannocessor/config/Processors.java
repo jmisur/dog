@@ -4,20 +4,20 @@ import org.jannocessor.model.structure.JavaClass;
 import org.jannocessor.processor.annotation.Annotated;
 import org.jannocessor.processor.annotation.Types;
 
-import com.jmisur.dog.Dto;
-import com.jmisur.dog.generator.XProcessor;
+import com.jmisur.dog.Mapper;
+import com.jmisur.dog.mapper.MapperProcessor;
 
 public class Processors {
 
-	@Annotated(Dto.class)
-	@Types(JavaClass.class)
-	public XProcessor xProcessor() {
-		return new XProcessor("xxx", false);
-	}
-
-	// @Annotated(Generator.class)
+	// @Annotated(DtoM.class)
 	// @Types(JavaClass.class)
-	// public DtoProcessor dtoProcessor() {
-	// return new DtoProcessor("xxx", false);
+	// public YProcessor xProcessor() {
+	// return new YProcessor("xxx", false);
 	// }
+
+	@Annotated(Mapper.class)
+	@Types(JavaClass.class)
+	public MapperProcessor dtoProcessor() {
+		return new MapperProcessor("xxx", false);
+	}
 }

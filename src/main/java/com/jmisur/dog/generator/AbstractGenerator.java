@@ -1,13 +1,8 @@
-package com.jmisur.dog;
+package com.jmisur.dog.generator;
 
 import java.lang.reflect.Modifier;
 import java.math.BigDecimal;
 import java.util.List;
-
-import com.jmisur.dog.generator.ClassGenerator;
-import com.jmisur.dog.generator.GeneratorContext;
-import com.jmisur.dog.generator.GeneratorHelper;
-import com.jmisur.dog.generator.XFieldBase;
 
 public abstract class AbstractGenerator {
 

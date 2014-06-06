@@ -8,10 +8,10 @@ import java.io.Serializable;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 
-import com.jmisur.dog.AbstractGenerator;
 import com.jmisur.dog.Generator;
 import com.jmisur.dog.car.XCar;
 import com.jmisur.dog.car.XPlane;
+import com.jmisur.dog.generator.AbstractGenerator;
 import com.jmisur.dog.generator.ClassDefinitionException;
 import com.jmisur.dog.generator.XClass;
 import com.jmisur.dog.person.Address;

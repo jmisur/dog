@@ -55,7 +55,7 @@ public class DtoProcessor extends AbstractGenerator<JavaClass> {
 				break;
 			}
 
-			com.jmisur.dog.AbstractGenerator instance = createGeneratorInstance(context, generatorClass);
+			com.jmisur.dog.generator.AbstractGenerator instance = createGeneratorInstance(context, generatorClass);
 			if (instance == null) {
 				break;
 			}
@@ -65,7 +65,7 @@ public class DtoProcessor extends AbstractGenerator<JavaClass> {
 		}
 	}
 
-	private void processClassGenerators(ProcessingContext context, JavaClass generator, com.jmisur.dog.AbstractGenerator instance) {
+	private void processClassGenerators(ProcessingContext context, JavaClass generator, com.jmisur.dog.generator.AbstractGenerator instance) {
 		for (ClassGenerator classGenerator : instance.getGenerators()) {
 			JavaClass dto = createClass(generator, classGenerator);
 			Collection<XFieldBase> fields = createFields(classGenerator, dto);
@@ -145,9 +145,9 @@ public class DtoProcessor extends AbstractGenerator<JavaClass> {
 	}
 
 	private boolean validGenerator(ProcessingContext context, Class<?> generatorClass) {
-		if (!com.jmisur.dog.AbstractGenerator.class.isAssignableFrom(generatorClass)) {
+		if (!com.jmisur.dog.generator.AbstractGenerator.class.isAssignableFrom(generatorClass)) {
 			context.getLogger().error("Class {} does not implement {} interface", generatorClass.getCanonicalName(),
-					com.jmisur.dog.AbstractGenerator.class.getCanonicalName());
+					com.jmisur.dog.generator.AbstractGenerator.class.getCanonicalName());
 			return false;
 		}
 
@@ -162,9 +162,9 @@ public class DtoProcessor extends AbstractGenerator<JavaClass> {
 		dto.getMethods().add(methodCopy);
 	}
 
-	private com.jmisur.dog.AbstractGenerator createGeneratorInstance(ProcessingContext context, Class<?> generatorClass) {
+	private com.jmisur.dog.generator.AbstractGenerator createGeneratorInstance(ProcessingContext context, Class<?> generatorClass) {
 		try {
-			return (com.jmisur.dog.AbstractGenerator) generatorClass.newInstance();
+			return (com.jmisur.dog.generator.AbstractGenerator) generatorClass.newInstance();
 		} catch (InstantiationException e) {
 			context.getLogger().error("Cannot instantiate generator class {}", generatorClass.getCanonicalName(), e);
 		} catch (IllegalAccessException e) {

@@ -183,10 +183,6 @@ public class XProcessor extends AbstractGenerator<JavaClass> {
 		return fieldType.getTypeClass().isAnnotationPresent(Dto.class);
 	}
 
-	// private static JavaType xfieldType(JavaType fieldType) {
-	// return type(XField.class, fieldType);
-	// }
-
 	private static JavaType xfield() {
 		return New.type(XField.class);
 	}
@@ -198,27 +194,5 @@ public class XProcessor extends AbstractGenerator<JavaClass> {
 	private static JavaType xfieldArray() {
 		return New.type("%s[]", XField.class.getCanonicalName());
 	}
-
-	// private static JavaType type(Class<?> clazz, JavaType fieldType) {
-	// String name = null;
-	// switch (fieldType.getKind()) {
-	// case DECLARED:
-	// name = fieldType.getSimpleName().getText();
-	// break;
-	// case INT:
-	// name = Integer.class.getSimpleName();
-	// break;
-	// // TODO others
-	// }
-	// return type(clazz, name);
-	// }
-	//
-	// private static JavaType type(Class<?> clazz, String param) {
-	// return New.type("%s<%s>", clazz.getCanonicalName(), param);
-	// }
-	//
-	// private static JavaType typeArray(Class<?> clazz, String param) {
-	// return New.type("%s<%s>[]", clazz.getCanonicalName(), param);
-	// }
 
 }
